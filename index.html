@@ -1,24 +1,42 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>斯多特普拉提 (STOTT PILATES) 模拟考试</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .option-btn { transition: all 0.2s ease; }
-        .option-btn:disabled { cursor: default; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
     </style>
 </head>
+
 <body class="bg-slate-100 min-h-screen flex items-center justify-center font-sans text-slate-800 p-4">
 
     <div id="app" class="max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden relative fade-in">
-        
+
         <!-- Header -->
         <div class="bg-teal-700 text-white p-6 md:p-8 text-center">
             <h1 class="text-2xl md:text-3xl font-bold tracking-tight">STOTT PILATES®</h1>
@@ -31,7 +49,8 @@
             <p class="text-slate-600 mb-8 max-w-lg mx-auto">
                 题库共包含 130 道精选试题（涵盖解剖学、姿势分析、普拉提五大基本原则及塑身机动作库）。每次测试将<strong>随机打乱并测试所有题目</strong>。
             </p>
-            <button onclick="startQuiz()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+            <button onclick="startQuiz()"
+                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
                 开始模拟考试
             </button>
         </div>
@@ -42,27 +61,30 @@
                 <span id="question-tracker">题目: 1 / 130</span>
                 <span id="score-tracker" class="text-teal-600">得分: 0</span>
             </div>
-            
+
             <!-- Progress Bar -->
             <div class="w-full bg-slate-200 rounded-full h-2.5 mb-8">
-                <div id="progress-bar" class="bg-teal-600 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                <div id="progress-bar" class="bg-teal-600 h-2.5 rounded-full transition-all duration-300"
+                    style="width: 10%"></div>
             </div>
 
             <div id="question-container" class="fade-in">
                 <h3 id="question-text" class="text-lg md:text-xl font-semibold mb-6 leading-relaxed">这里是题目内容？</h3>
-                
+
                 <div id="options-container" class="space-y-3">
                     <!-- Options injected via JS -->
                 </div>
 
-                <div id="feedback-container" class="hidden mt-6 p-4 rounded-lg bg-slate-50 border border-slate-200 fade-in">
+                <div id="feedback-container"
+                    class="hidden mt-6 p-4 rounded-lg bg-slate-50 border border-slate-200 fade-in">
                     <p id="feedback-title" class="font-bold mb-1"></p>
                     <p id="feedback-text" class="text-slate-600 text-sm"></p>
                 </div>
             </div>
 
             <div class="mt-8 flex justify-end">
-                <button id="next-btn" onclick="nextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors">
+                <button id="next-btn" onclick="nextQuestion()"
+                    class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors">
                     下一题
                 </button>
             </div>
@@ -72,13 +94,15 @@
         <div id="result-screen" class="hidden p-8 md:p-12 text-center fade-in">
             <div id="result-icon" class="text-6xl mb-4">🏆</div>
             <h2 class="text-2xl font-bold mb-2">测试完成！</h2>
-            <p class="text-lg text-slate-600 mb-6">你的最终得分是: <strong id="final-score" class="text-teal-700 text-3xl"></strong> / <span id="total-questions-result">130</span></p>
-            
+            <p class="text-lg text-slate-600 mb-6">你的最终得分是: <strong id="final-score"
+                    class="text-teal-700 text-3xl"></strong> / <span id="total-questions-result">130</span></p>
+
             <div id="result-message" class="text-slate-700 mb-8 p-4 bg-teal-50 rounded-lg">
                 <!-- Result message injected via JS -->
             </div>
 
-            <button onclick="startQuiz()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow transition-colors">
+            <button onclick="startQuiz()"
+                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow transition-colors">
                 重新测试 (抽取新题)
             </button>
         </div>
@@ -86,781 +110,447 @@
     </div>
 
     <script>
-        // Full database of 130 questions
+        // Highly difficult, deeply anatomical, terminology-balanced question database
         const questionDatabase = [
             {
-                q: "在斯多特普拉提 (STOTT PILATES) 的五个基本原则中，'印记' (Imprint) 骨盆位置最适合在什么情况下使用？",
-                options: ["当双脚放在脚踏杆上进行闭链运动时", "当双腿抬起处于'桌面式' (Tabletop) 的开链运动中，且核心力量不足以维持中立位时", "在进行所有的脊柱伸展 (Extension) 动作时", "当客户处于站立姿势时"],
-                ans: 1,
-                rationale: "印记位置主要用于开链运动中，通过腹斜肌的收缩来保护腰椎，防止腰椎过度伸展。"
-            },
-            {
-                q: "在进行'百次拍击' (The Hundred) 时，标准的呼吸模式是什么？",
-                options: ["吸气3拍，呼气7拍", "吸气5拍，呼气5拍", "每次手臂上下拍击时吸气和呼气交替", "吸气4拍，呼气6拍"],
-                ans: 1,
-                rationale: "标准的呼吸模式是通过鼻子吸气5拍，通过嘴巴呼气5拍，以促进血液循环和核心稳定。"
-            },
-            {
-                q: "以下哪块肌肉的主要功能是使肩胛骨前伸 (Protraction)？",
-                options: ["菱形肌 (Rhomboids)", "中斜方肌 (Middle Trapezius)", "前锯肌 (Serratus Anterior)", "肩胛提肌 (Levator Scapulae)"],
+                q: "在斯多特普拉提 (STOTT PILATES) 五大基本原则中，'印记' (Imprint) 骨盆位置最适合在什么生物力学条件下使用？",
+                options: [
+                    "进行强调脊柱伸展 (Spinal Extension) 的垫上闭链练习时",
+                    "在足部有支撑的闭链运动 (Closed Kinetic Chain) 中，最大化募集腹直肌 (Rectus Abdominis) 时",
+                    "当核心力量不足以在双腿悬空的开链运动 (Open Kinetic Chain) 中维持腰椎中立位 (Neutral Lumbar Spine) 时",
+                    "为了在侧卧系列 (Side-Lying Series) 中防止骨盆发生冠状面 (Frontal Plane) 的侧倾时"
+                ],
                 ans: 2,
-                rationale: "前锯肌收缩时会将肩胛骨向前拉（前伸），使其贴合在胸廓上，常用于向前推的动作。"
+                rationale: "印记位置 (Imprint) 主要是通过腹斜肌 (Obliques) 的收缩使骨盆轻微后倾，专门用于在开链运动中保护腰椎，防止其被沉重的下肢拉入过度前凸 (Hyperlordosis) 的状态。"
             },
             {
-                q: "在姿势评估中，'平背' (Flat Back) 姿势的典型骨盆位置是怎样的？",
-                options: ["骨盆前倾 (Anterior Tilt)", "骨盆中立位 (Neutral Pelvis)", "骨盆后倾 (Posterior Tilt)", "骨盆侧倾 (Lateral Tilt)"],
+                q: "以下哪块肌肉的单侧收缩不仅会产生肩胛骨的前伸 (Scapular Protraction)，还能产生肩胛骨的上回旋 (Upward Rotation)？",
+                options: [
+                    "菱形肌 (Rhomboids)",
+                    "胸小肌 (Pectoralis Minor)",
+                    "前锯肌 (Serratus Anterior)",
+                    "肩胛提肌 (Levator Scapulae)"
+                ],
                 ans: 2,
-                rationale: "平背姿势的特征是骨盆后倾，导致腰椎前凸曲线消失，背部变得平坦。"
+                rationale: "前锯肌 (Serratus Anterior) 附着在肩胛骨内侧缘，是肩胛骨前伸的主动肌，且其下部纤维在手臂高举过头时协同产生肩胛骨的上回旋。"
             },
             {
-                q: "以下哪一块骨骼标志位于股骨 (Femur) 上？",
-                options: ["髂前上棘 (ASIS)", "大转子 (Greater Trochanter)", "坐骨结节 (Ischial Tuberosity)", "肩峰 (Acromion)"],
+                q: "在进行'平背' (Flat Back) 姿势的静态评估时，骨盆与腰椎的典型相对位置是怎样的？",
+                options: [
+                    "骨盆前倾 (Anterior Pelvic Tilt) 伴随腰椎前凸增加 (Increased Lordosis)",
+                    "骨盆中立位 (Neutral Pelvis) 伴随胸椎后凸变浅 (Decreased Kyphosis)",
+                    "骨盆后倾 (Posterior Pelvic Tilt) 伴随腰椎前凸曲度消失 (Flattened Lordosis)",
+                    "骨盆侧倾 (Lateral Pelvic Tilt) 伴随腰椎的水平面旋转 (Transverse Rotation)"
+                ],
+                ans: 2,
+                rationale: "平背 (Flat Back) 体态的根本特征是腘绳肌等后侧肌肉紧绷导致骨盆后倾，进而拉平了腰椎自然的生理前凸 (Lordosis)。"
+            },
+            {
+                q: "强大的单关节髋屈肌——髂腰肌 (Iliopsoas) 的远端附着点（止点）位于股骨的哪一个特定骨骼标志上？",
+                options: [
+                    "髂前下棘 (Anterior Inferior Iliac Spine, AIIS)",
+                    "股骨大转子 (Greater Trochanter)",
+                    "股骨小转子 (Lesser Trochanter)",
+                    "坐骨结节 (Ischial Tuberosity)"
+                ],
+                ans: 2,
+                rationale: "髂肌和腰大肌汇合成髂腰肌腱，向下穿过骨盆，最终附着在股骨内侧深处的小转子 (Lesser Trochanter) 上。"
+            },
+            {
+                q: "在塑身机的'脚部动作' (Footwork) 练习中，若客户呈现明显的股四头肌主导 (Quadriceps Dominance) 而腘绳肌 (Hamstrings) 极度虚弱，教练应如何利用弹簧阻力进行力学调整？",
+                options: [
+                    "在滑板推出 (Carriage Out) 阶段，提示客户利用股直肌 (Rectus Femoris) 强力锁定膝关节",
+                    "在滑板返回 (Carriage In) 阶段，强调腘绳肌 (Hamstrings) 和臀大肌 (Gluteus Maximus) 的离心控制 (Eccentric Control)",
+                    "将弹簧阻力降至最轻的 1/4 弹簧，以增加神经肌肉协调性 (Neuromuscular Coordination)",
+                    "全程引导客户保持骨盆后倾 (Posterior Tilt) 的印记状态 (Imprint)，以抑制大腿前侧发力"
+                ],
                 ans: 1,
-                rationale: "大转子是股骨近端外侧的一个巨大突起，是许多臀部肌肉的附着点。"
+                rationale: "滑板返回时受控抵抗重弹簧的拉力，能极佳地迫使大腿后侧链（腘绳肌和臀肌）进行离心收缩 (Eccentric Contraction)，从而有效平衡前后肌群的力量差异。"
             },
             {
-                q: "在塑身机的'脚部动作' (Footwork) 中，如果客户股四头肌过度发达而腘绳肌较弱，教练应如何调整提示？",
-                options: ["提示客户在推出滑板时用力锁定膝盖", "提示客户在滑板返回时，强调离心收缩 (Eccentric control) 控制", "减少所有的弹簧阻力", "让客户在整个动作中保持骨盆印记"],
+                q: "关于肌肉的向心收缩 (Concentric Contraction)，以下哪项生物力学描述最为准确？",
+                options: [
+                    "肌肉内部产生的张力低于外部阻力，导致肌肉纤维在负荷下拉长 (Lengthening under load)",
+                    "肌肉产生张力的同时，其肌节 (Sarcomeres) 长度不发生显著改变",
+                    "肌肉产生的内部张力克服了外部阻力，导致肌肉附着点相互靠近 (Origin and insertion move closer)",
+                    "肌纤维的肌动蛋白 (Actin) 和肌球蛋白 (Myosin) 完全分离，不产生主动张力"
+                ],
+                ans: 2,
+                rationale: "向心收缩 (Concentric Contraction) 发生时，肌肉产生的力量大于阻力，导致肌肉缩短，引起关节角度的变化（例如二头肌弯举时的向上阶段）。"
+            },
+            {
+                q: "在进行'短箱系列 - 圆背后倾' (Short Box - Round Back) 时，脊柱的初始及运动状态应保持在？",
+                options: [
+                    "脊柱始终处于中立位 (Neutral Spine)，完全依靠纯粹的髋关节铰链 (Hip Hinge) 向后倾斜",
+                    "脊柱处于极度伸展 (Extension) 状态，以强化竖脊肌 (Erector Spinae)",
+                    "由骨盆后倾 (Posterior Tilt) 引导，脊柱形成并维持均匀屈曲的C型曲线 (Flexed C-Curve)",
+                    "颈椎保持伸展 (Cervical Extension) 的同时，胸腰椎进行深度屈曲 (Thoracolumbar Flexion)"
+                ],
+                ans: 2,
+                rationale: "在 Round Back 中，客户必须通过腹直肌 (Rectus Abdominis) 和腹斜肌 (Obliques) 的强烈收缩维持骨盆后倾，使整个脊柱在后倾过程中维持一个均匀的屈曲弧度。"
+            },
+            {
+                q: "以下四块肌肉中，哪一块属于跨越了髋关节 (Hip Joint) 和膝关节 (Knee Joint) 的双关节肌肉？",
+                options: [
+                    "股外侧肌 (Vastus Lateralis)",
+                    "缝匠肌 (Sartorius)",
+                    "股中间肌 (Vastus Intermedius)",
+                    "大收肌 (Adductor Magnus)"
+                ],
                 ans: 1,
-                rationale: "滑板返回时受控抵抗弹簧阻力，能有效募集腘绳肌和臀部肌肉进行离心收缩，平衡腿部力量。"
+                rationale: "缝匠肌 (Sartorius) 起自髂前上棘 (ASIS)，斜穿大腿前侧止于胫骨内侧，是人体最长的肌肉，同时跨越髋、膝两个关节。"
             },
             {
-                q: "向心收缩 (Concentric Contraction) 的定义是什么？",
-                options: ["肌肉在产生张力的同时变长", "肌肉在产生张力的同时长度不变", "肌肉在产生张力的同时缩短，克服了阻力", "肌肉完全放松，不产生张力"],
+                q: "在姿势异常的'摇摆背' (Sway Back) 体态中，胸椎 (Thoracic Spine) 和骨盆 (Pelvis) 分别呈现何种典型的矢状面 (Sagittal Plane) 偏移？",
+                options: [
+                    "胸椎过度前凸 (Hyperlordosis)，骨盆前倾 (Anterior Tilt) 并后移",
+                    "胸椎曲度变平 (Flattened Kyphosis)，骨盆中立位 (Neutral Pelvis)",
+                    "胸椎后凸增加 (Increased Kyphosis) 且向后移位，骨盆后倾 (Posterior Tilt) 且向前移位",
+                    "胸椎侧屈 (Lateral Flexion)，骨盆在额状面 (Frontal Plane) 侧倾"
+                ],
                 ans: 2,
-                rationale: "向心收缩是指肌肉内部产生的力量大于外部阻力，导致肌肉纤维缩短并引起关节运动。"
+                rationale: "摇摆背 (Sway Back) 的核心特征是骨盆被向前推出（相对于脚踝），为了维持重心平衡，上半身（胸椎）必须向后倒并增加驼背（屈曲/后凸）曲度。"
             },
             {
-                q: "在进行塑身机上的'短箱系列 - 腹部后倾' (Short Box - Round Back) 时，正确的脊柱起始状态是什么？",
-                options: ["脊柱完全中立位", "脊柱处于完全伸展状态", "脊柱处于均匀的屈曲状态，骨盆后倾", "颈椎伸展，胸椎屈曲"],
+                q: "当仰卧进行'百次拍击' (The Hundred) 的准备阶段卷起上半身时，原则上推荐的首要颈椎动作是？",
+                options: [
+                    "强力收缩胸锁乳突肌 (Sternocleidomastoid) 将下巴死死抵住胸骨",
+                    "保持颈椎绝对僵直 (Rigid Neutral)，通过上斜方肌 (Upper Trapezius) 上提肩胛带",
+                    "激活深层颈屈肌 (Deep Cervical Flexors)，产生轻微的颅椎屈曲 (Craniovertebral Flexion/Head Nod)",
+                    "使颈椎处于过度伸展 (Hyperextension) 状态，视线直视天花板正上方"
+                ],
                 ans: 2,
-                rationale: "客户需要通过腹部深层肌肉的收缩使骨盆后倾，让整个脊柱呈现出均匀的C型曲线 (屈曲)。"
+                rationale: "轻微的“点头” (Head Nod / 颅椎屈曲) 能够拉长颈椎后侧，激活深层的颈长肌等稳定肌群，避免表层肌肉过度代偿导致的颈部疼痛。"
             },
             {
-                q: "以下哪块肌肉不属于股四头肌 (Quadriceps)？",
-                options: ["股外侧肌 (Vastus Lateralis)", "股直肌 (Rectus Femoris)", "股中间肌 (Vastus Intermedius)", "股二头肌 (Biceps Femoris)"],
+                q: "肌肉在进行离心收缩 (Eccentric Contraction) 时的主要生物力学功能是什么？",
+                options: [
+                    "产生远大于外部阻力的力量，以极高的加速度启动关节运动",
+                    "肌肉在肌纤维被拉长的状态下主动产生张力，用于减速并受控地抵抗外部阻力 (Deceleration)",
+                    "在关节角度完全不发生改变的情况下，维持躯干或肢体的等长稳定 (Isometric Stabilization)",
+                    "通过放松拮抗肌 (Antagonists)，使原动肌 (Agonists) 能够毫无阻力地完成全幅度运动"
+                ],
+                ans: 1,
+                rationale: "离心收缩相当于人体的“刹车系统”。例如在滑板返回时，肌肉被弹簧拉长，但仍主动发力以控制返回的速度，防止滑板失控猛撞。"
+            },
+            {
+                q: "在盂肱关节 (Glenohumeral Joint) 的外展 (Abduction) 动作中，为了防止肱骨大结节 (Greater Tuberosity) 撞击肩峰底面，肩关节通常需要伴随什么微调运动？",
+                options: [
+                    "肩关节内旋 (Shoulder Internal Rotation)",
+                    "肩关节外旋 (Shoulder External Rotation)",
+                    "肩关节前屈 (Shoulder Flexion)",
+                    "肩关节极度后伸 (Shoulder Hyperextension)"
+                ],
+                ans: 1,
+                rationale: "当手臂外展超过90度时，肱骨必须进行外旋 (External Rotation)，这样大结节就能巧妙地滑过肩峰穹窿的下方，避免发生肩峰下撞击综合征。"
+            },
+            {
+                q: "背阔肌 (Latissimus Dorsi) 的主要解剖学功能极其广泛，但绝对不包括以下哪一项？",
+                options: [
+                    "肩关节伸展 (Shoulder Extension)",
+                    "肩关节内旋 (Shoulder Internal Rotation)",
+                    "肩关节水平内收 (Shoulder Horizontal Adduction)",
+                    "肩胛骨下沉 (Scapular Depression) 的协同作用"
+                ],
+                ans: 2,
+                rationale: "背阔肌的功能是将手臂向后、向下、向内拉（伸展、内收、内旋）。而水平内收（如在胸前拍手）主要是胸大肌 (Pectoralis Major) 的功能。"
+            },
+            {
+                q: "在塑身机的'大象式' (Elephant) 练习中，原动肌 (Prime Movers) 产生的核心动作主要发生在哪一个关节平面上？",
+                options: [
+                    "在矢状面 (Sagittal Plane) 上，膝关节的纯粹屈伸 (Knee Flexion/Extension)",
+                    "在矢状面 (Sagittal Plane) 上，脊柱的深度屈曲和伸展交替 (Spinal Flexion/Extension)",
+                    "在额状面 (Coronal Plane) 上，肩胛胸廓关节的上下回旋 (Scapulothoracic Rotation)",
+                    "在矢状面 (Sagittal Plane) 上，以稳定的骨盆和脊柱为基础的髋关节屈伸 (Hip Flexion/Extension)"
+                ],
                 ans: 3,
-                rationale: "股二头肌属于大腿后侧的腘绳肌 (Hamstrings) 肌群，负责屈膝和伸髋。"
+                rationale: "大象式是一个极佳的闭链拉伸和控制动作。躯干（背部呈C型或平背）必须保持绝对静止，所有的运动都来源于髋关节的铰链式折叠（屈曲收回滑板）和打开（伸展推开滑板）。"
             },
             {
-                q: "在'脊柱侧弯' (Scoliosis) 姿势中，脊柱在哪个平面上发生了异常弯曲？",
-                options: ["矢状面 (Sagittal Plane)", "水平面 (Transverse Plane)", "冠状面 / 额状面 (Frontal Plane)", "斜面 (Oblique Plane)"],
-                ans: 2,
-                rationale: "脊柱侧弯是指脊柱在冠状面上偏离中线的侧向弯曲。"
-            },
-            {
-                q: "'头部和颈椎的放置'原则建议在仰卧屈曲（如卷腹）时采取什么动作起手？",
-                options: ["用力将下巴夹紧胸部", "保持颈部僵直直接抬起肩膀", "下巴抬高看向天花板", "微微的颅椎屈曲，即'头部轻轻点头'"],
-                ans: 3,
-                rationale: "轻微的颅椎屈曲可以拉长颈部后侧，使颈椎在接下来的胸椎屈曲中保持正确对齐。"
-            },
-            {
-                q: "当肌肉进行离心收缩 (Eccentric Contraction) 时，它的主要作用是什么？",
-                options: ["启动并加速动作", "减速和抵抗重力（或弹簧阻力）以控制动作", "固定关节防止运动", "被动拉伸"],
-                ans: 1,
-                rationale: "离心收缩时肌肉被拉长，像刹车一样工作，以受控的方式抵抗阻力，防止动作过快。"
-            },
-            {
-                q: "在解剖学中，'外展' (Abduction) 的定义是？",
-                options: ["肢体向身体中线靠近", "肢体远离身体中线", "关节角度变小", "关节角度变大"],
-                ans: 1,
-                rationale: "外展是指在冠状面上，将肢体向外侧移动，远离身体的中心线。"
-            },
-            {
-                q: "背阔肌 (Latissimus Dorsi) 不参与以下哪个肩关节的动作？",
-                options: ["伸展 (Extension)", "内旋 (Internal Rotation)", "内收 (Adduction)", "外展 (Abduction)"],
-                ans: 3,
-                rationale: "背阔肌的功能是将手臂拉近身体，而外展是将手臂抬起远离身体，主要是三角肌的功能。"
-            },
-            {
-                q: "在塑身机的'大象式' (Elephant) 练习中，主要的动作发生在哪一个关节？",
-                options: ["膝关节", "脊柱", "肩关节", "髋关节 (Hip Flexion and Extension)"],
-                ans: 3,
-                rationale: "这是一个闭链运动，主要发生在髋关节的铰链式伸展（推开滑板）和屈曲（收回滑板）。"
-            },
-            {
-                q: "在进行“百次拍击” (The Hundred) 时，塑身机标准的弹簧阻力通常是多少？",
-                options: ["1 个全弹簧", "2 个全弹簧", "3 个全弹簧", "4 个全弹簧"],
-                ans: 1,
-                rationale: "标准配置通常是2个全弹簧（不同品牌或客户能力可能微调，但2个是基础测试标准）。"
-            },
-            {
-                q: "“髂腰肌” (Iliopsoas) 的主要功能是什么？",
-                options: ["伸展髋关节", "外展髋关节", "屈曲髋关节", "膝关节屈曲"],
-                ans: 2,
-                rationale: "髂腰肌是人体最强大的髋屈肌，负责将大腿向上抬向腹部。"
-            },
-            {
-                q: "在“摇摆背” (Sway Back) 姿势中，骨盆通常处于什么状态？",
-                options: ["骨盆前倾", "骨盆中立位", "骨盆侧倾", "骨盆后倾并相对于脚踝前移"],
-                ans: 3,
-                rationale: "摇摆背的典型特征是骨盆向前推（前移）同时伴随骨盆后倾，使得髋关节处于伸展状态。"
-            },
-            {
-                q: "腹横肌 (Transversus Abdominis) 的主要收缩作用是什么？",
-                options: ["使脊柱侧屈", "像紧身胸衣一样压缩腹部内容物，稳定骨盆和腰椎", "使脊柱强力屈曲", "使脊柱伸展"],
-                ans: 1,
-                rationale: "腹横肌是深层核心肌肉，收缩时缩小腹围，提供核心的内在稳定性。"
-            },
-            {
-                q: "在塑身机“脚部动作 - 脚跟” (Footwork - Heels on Bar) 练习中，脚跟放置在脚踏杆上的主要目的是什么？",
-                options: ["更多地募集腘绳肌和臀大肌", "更多地募集小腿腓肠肌", "仅仅为了拉伸跟腱", "强调股四头肌的主导地位"],
+                q: "在标准的 '百次拍击' (The Hundred) 练习中，设置弹簧阻力（如2个全弹簧）的生物力学意义是什么？",
+                options: [
+                    "通过绑带向前拉扯手臂，强迫躯干进行并维持胸椎屈曲 (Thoracic Flexion)，挑战腹直肌的等长收缩力",
+                    "仅仅是为了孤立锻炼肱三头肌 (Triceps Brachii) 的向心收缩能力",
+                    "为悬空的双腿提供向上的承托力，减少髂腰肌 (Iliopsoas) 的负荷",
+                    "拉伸胸大肌 (Pectoralis Major) 并强迫肩胛骨进入完全前伸 (Protraction) 状态"
+                ],
                 ans: 0,
-                rationale: "将脚跟放在脚踏杆上改变了力矩，相比脚趾位置，能更强烈地激活大腿后侧的腘绳肌和臀部。"
+                rationale: "弹簧的拉力试图将手臂拉向滑轮架（肩屈曲方向），客户必须强烈收缩背阔肌和腹肌（尤其是腹直肌）来压住手臂并维持上胸椎的卷起状态。"
             },
             {
-                q: "以下哪块肌肉在脊柱前凸 (Lordosis) 姿势中通常是紧绷/缩短的？",
-                options: ["腹直肌 (Rectus Abdominis)", "竖脊肌 (Erector Spinae)", "腘绳肌 (Hamstrings)", "臀大肌 (Gluteus Maximus)"],
+                q: "腹横肌 (Transversus Abdominis) 作为核心深层稳定系统的关键，其主要的收缩力学表现为？",
+                options: [
+                    "产生强大的脊柱侧屈 (Lateral Flexion) 力量，常用于侧弯练习",
+                    "收缩时环绕腹腔缩小腹围，增加腹内压 (Intra-abdominal Pressure)，并通过胸腰筋膜 (Thoracolumbar Fascia) 稳定腰盆区",
+                    "作为强有力的脊柱屈肌 (Spinal Flexor)，在卷腹动作中主导发力",
+                    "协同前锯肌 (Serratus Anterior) 完成肩胛骨的下沉 (Depression)"
+                ],
                 ans: 1,
-                rationale: "脊柱前凸意味着下背部弧度过大，这通常伴随着下背部肌肉（如竖脊肌）的紧绷和缩短。"
+                rationale: "腹横肌的纤维呈水平走向，不产生任何脊柱的宏观运动（如屈伸或旋转），而是像一条天然的负重腰带，为腰椎提供液压式和筋膜式的张力支撑。"
             },
             {
-                q: "普拉提基本原则中，“肋骨放置”主要是为了防止什么？",
-                options: ["颈椎过度屈曲", "骨盆后倾", "脊柱伸展或手臂举过头顶时肋骨过度“爆开”，失去腹部连接", "肩膀耸起"],
-                ans: 2,
-                rationale: "保持肋骨不“爆开”(popping) 能够维持腹斜肌的张力，从而在上肢运动时稳定胸椎。"
-            },
-            {
-                q: "在进行“中背部系列” (Midback Series) 时，手臂拉下绑带，主要的运动平面是？",
-                options: ["冠状面 (Frontal Plane)", "水平面 (Transverse Plane)", "矢状面 (Sagittal Plane)", "额状面 (Coronal Plane)"],
-                ans: 2,
-                rationale: "手臂向前和向后的屈伸动作发生将身体分为左右两半的矢状面中。"
-            },
-            {
-                q: "“协调” (Coordination) 练习的标准呼吸模式中，什么时候呼气？",
-                options: ["仅在手臂推开时", "仅在打开和并拢双腿时", "整个动作保持吸气", "手臂推开伸直双腿时呼气，以及最后收回双腿和手臂时呼气"],
-                ans: 3,
-                rationale: "这是一个多步骤动作。呼气用于发力（推开）以及动作结束时的控制收回。"
-            },
-            {
-                q: "菱形肌和前锯肌共同作用，主要维持哪个关节的稳定？",
-                options: ["肩胛胸廓关节 (Scapulothoracic Joint)", "盂肱关节 (Glenohumeral Joint)", "髋关节 (Hip Joint)", "骶髂关节 (Sacroiliac Joint)"],
+                q: "在塑身机的 '脚部动作 - 脚跟' (Footwork - Heels on Bar) 练习中，将着力点改为脚跟的主要目的是什么？",
+                options: [
+                    "改变力矩，通过闭链运动更强烈地激活腘绳肌 (Hamstrings) 和臀大肌 (Gluteus Maximus) 的向心与离心控制",
+                    "孤立训练小腿后侧的腓肠肌 (Gastrocnemius) 和比目鱼肌 (Soleus)",
+                    "仅仅是为了在动作最远端被动拉伸跟腱 (Achilles Tendon)",
+                    "使股直肌 (Rectus Femoris) 成为绝对的主导发力肌群，抑制后侧链的发力"
+                ],
                 ans: 0,
-                rationale: "这两块肌肉一前一后附着在肩胛骨上，像力偶一样共同维持肩胛骨在胸廓上的稳定滑动。"
+                rationale: "脚跟推杆排除了踝关节跖屈肌（小腿）的辅助发力，将阻力负荷更直接地传递到大腿后侧和臀部，建立更平衡的下肢发力模式。"
             },
             {
-                q: "在“短箱系列 - 平背后倾” (Short Box - Straight Back) 中，脊柱必须保持什么状态？",
-                options: ["屈曲 (Flexion)", "伸展 (Extension)", "中立位 (Neutral)", "侧屈 (Lateral Flexion)"],
-                ans: 2,
-                rationale: "Straight back 顾名思义，要求脊柱（从头顶到尾骨）保持成一条直线的自然中立位向后倾斜。"
-            },
-            {
-                q: "在解剖学位置中，以下哪个结构位于最“内侧” (Medial)？",
-                options: ["肩膀 (Shoulder)", "膝盖外侧 (Lateral knee)", "肚脐 (Umbilicus)", "耳朵 (Ear)"],
-                ans: 2,
-                rationale: "内侧是指靠近身体正中线的位置，肚脐位于正中线上，因此是最内侧的。"
-            },
-            {
-                q: "进行“膝部伸展 - 圆背” (Knee Stretches - Round Back) 时，动作的起始位置骨盆处于什么状态？",
-                options: ["前倾", "中立位", "旋转", "后倾 (印记)"],
-                ans: 3,
-                rationale: "为了形成深度的C型圆背，骨盆必须处于深度的后倾（印记）状态并贯穿动作始终。"
-            },
-            {
-                q: "“大象式” (Elephant) 旨在拉伸哪里的肌肉？",
-                options: ["身体前侧链 (如股四头肌)", "身体外侧链 (如阔筋膜张肌)", "身体后侧链 (如腘绳肌，小腿三头肌)", "身体内侧链 (如内收肌群)"],
-                ans: 2,
-                rationale: "脚跟着地、腿部伸直、脊柱屈曲的姿势能够有效拉伸整个身体后侧筋膜和肌肉。"
-            },
-            {
-                q: "“天鹅式” (Swan Dive) 准备动作在塑身机上主要强调脊柱的哪个动作？",
-                options: ["脊柱屈曲 (Flexion)", "胸椎和腰椎的伸展 (Extension)", "脊柱侧屈 (Lateral Flexion)", "脊柱旋转 (Rotation)"],
+                q: "对于呈现明显 '脊柱前凸' (Lordosis) 姿势的客户，以下哪两组肌肉通常处于过度缩短 (Shortened/Tight) 的状态？",
+                options: [
+                    "腹直肌 (Rectus Abdominis) 和 臀大肌 (Gluteus Maximus)",
+                    "腰部竖脊肌 (Lumbar Erector Spinae) 和 髋屈肌群 (Hip Flexors，如髂腰肌)",
+                    "腘绳肌 (Hamstrings) 和 腹横肌 (Transversus Abdominis)",
+                    "多裂肌 (Multifidus) 和 胸大肌 (Pectoralis Major)"
+                ],
                 ans: 1,
-                rationale: "天鹅式是一个经典的脊柱后伸 (Extension) 练习，强化背部伸肌群。"
+                rationale: "脊柱前凸伴随骨盆前倾。在骨盆前倾状态下，跨越骨盆前侧的髋屈肌和腰椎后侧的伸展肌被长期拉近缩短，而腹肌和臀肌则被拉长变弱。"
             },
             {
-                q: "对于有严重骨质疏松症的客户，以下哪种脊柱运动是绝对禁忌的？",
-                options: ["脊柱伸展 (Extension)", "脊柱中立位等长收缩", "强烈的脊柱屈曲 (Flexion) 及负重旋转", "轻微的肩胛骨回缩"],
+                q: "斯多特普拉提基本原则中的 '肋骨放置' (Rib Cage Placement) 主要是为了防止在上肢运动中出现何种代偿？",
+                options: [
+                    "防止在手臂下放时发生颈椎的过度屈曲 (Cervical Flexion)",
+                    "防止在双腿伸直时骨盆被拉入极度的后倾 (Posterior Tilt)",
+                    "防止在肩关节屈曲 (Shoulder Flexion / 手臂高举过头) 时，胸椎代偿性伸展（肋骨爆开），导致腹内/外斜肌 (Obliques) 失去连接",
+                    "防止在任何负重练习中肩胛骨出现代偿性的上提 (Scapular Elevation)"
+                ],
                 ans: 2,
-                rationale: "骨质疏松最容易在脊椎前部发生压迫性骨折，因此强烈的屈曲和旋转是非常危险的。"
+                rationale: "当手臂举过头顶时，如果肩关节屈曲幅度受限，身体通常会通过拱起背部（胸椎伸展/肋骨翘起）来代偿。保持肋骨连接能确保真正的肩关节活动度训练并保护胸腰椎。"
             },
             {
-                q: "“侧分腿” (Side Splits) 练习的主要目标肌群是？",
-                options: ["仅限髋外展肌", "仅限髋内收肌", "髋内外侧肌群的离心和向心控制 (内收肌和外展肌)", "仅限股四头肌"],
+                q: "在进行 '中背部系列' (Midback Series) 如 '双手下拉' (Straight Down) 时，手臂运动主要发生在哪个解剖平面？",
+                options: [
+                    "冠状面 (Frontal Plane)",
+                    "水平面 (Transverse Plane)",
+                    "矢状面 (Sagittal Plane)",
+                    "斜面 (Oblique Plane)"
+                ],
                 ans: 2,
-                rationale: "推开滑板时外展肌做向心收缩、内收肌做离心控制；收回时则相反。两者均被强烈锻炼。"
+                rationale: "手臂在身体正前方直直向下压向大腿（肩关节伸展），这是一个将身体划分为左右两半的矢状面 (Sagittal Plane) 运动。"
             },
             {
-                q: "当脚掌向下踩 (如踮起脚尖) 时，这个踝关节的动作在解剖学上称为什么？",
-                options: ["背屈 (Dorsiflexion)", "跖屈 (Plantar Flexion)", "内翻 (Inversion)", "外翻 (Eversion)"],
+                q: "在 '协调' (Coordination) 练习的复杂运动模式中，标准的呼气 (Exhalation) 阶段发生在哪里？",
+                options: [
+                    "仅在屈肘将手臂拉回身体两侧时呼气，以利用腹肌的等长收缩 (Isometric Contraction)",
+                    "在手臂推开伴随双腿伸直时呼气（发力阶段），以及在动作最后同时收回手臂和双腿时呼气（离心控制阶段）",
+                    "全程维持等长吸气 (Isometric Inhalation) 以最大化胸腔容积",
+                    "仅在双腿在空间中进行外展 (Abduction) 和内收 (Adduction) 开合时呼气"
+                ],
                 ans: 1,
-                rationale: "脚背绷直、脚掌向下的动作称为跖屈 (Plantar Flexion)。"
+                rationale: "这是一个多步骤动作。呼气被用于两个最需要核心深层稳定的时刻：向外推开重弹簧时，以及抵抗弹簧拉力受控收回时。"
             },
             {
-                q: "股四头肌中，哪一块肌肉跨越了髋关节？",
-                options: ["股内侧肌 (Vastus Medialis)", "股外侧肌 (Vastus Lateralis)", "股中间肌 (Vastus Intermedius)", "股直肌 (Rectus Femoris)"],
-                ans: 3,
-                rationale: "股直肌起点在髂前下棘，不仅跨过膝关节也跨过髋关节，因此具有屈髋的功能。"
-            },
-            {
-                q: "在进行“划船系列前部 - 献上” (Rowing Front - Offering) 时，肩膀处于什么运动状态？",
-                options: ["伸展 (Extension)", "内收 (Adduction)", "下回旋 (Downward Rotation)", "屈曲 (Flexion)"],
-                ans: 3,
-                rationale: "手臂从身体两侧向前向上举起（献上），这个动作属于肩关节的屈曲。"
-            },
-            {
-                q: "关于“美人鱼式” (Mermaid) 练习，以下哪项描述是正确的？",
-                options: ["这是一个强调脊柱屈伸的动作", "骨盆必须随着脊柱的侧屈而大幅度抬起", "主要发生在冠状面，强调脊柱的侧屈 (Lateral Flexion)", "它是一个纯闭链的下肢运动"],
-                ans: 2,
-                rationale: "美人鱼式是普拉提中最经典的侧屈练习，在冠状面上活动，打开侧腰和肋间肌。"
-            },
-            {
-                q: "在肌肉收缩的滑动微丝理论中，哪两种蛋白质丝相互滑动产生张力？",
-                options: ["胶原蛋白和弹性蛋白", "肌动蛋白 (Actin) 和 肌球蛋白 (Myosin)", "钙离子和钾离子", "韧带和肌腱"],
-                ans: 1,
-                rationale: "肌球蛋白头部抓住肌动蛋白并牵拉，导致肌节缩短，从而产生肌肉收缩。"
-            },
-            {
-                q: "如果客户在做仰卧抬腿动作时腰部离开垫子拱起，说明他/她失去了哪种稳定性？",
-                options: ["肩胛骨稳定性", "颈椎稳定性", "骨盆和腰椎稳定性 (腹肌力量不足抗衡髋屈肌)", "踝关节稳定性"],
-                ans: 2,
-                rationale: "当髋屈肌用力抬起沉重的腿部时，如果腹肌力量不够，骨盆会被拉向前倾，导致腰椎拱起。"
-            },
-            {
-                q: "下列哪个是球窝关节 (Ball-and-Socket Joint) 的例子，允许在三个平面上运动？",
-                options: ["膝关节", "肘关节", "腕关节", "髋关节 (Hip Joint)"],
-                ans: 3,
-                rationale: "髋关节和肩关节属于球窝关节，具有最大的活动度，可以屈伸、外展内收和旋转。"
-            },
-            {
-                q: "斯多特普拉提的呼吸原则建议吸气时将空气引入哪里？",
-                options: ["仅仅是腹部凸起 (腹式呼吸)", "胸廓的上部，抬起锁骨和肩膀", "仅仅是背部", "胸廓的下部和后部 (三维/肋间呼吸)"],
-                ans: 3,
-                rationale: "将空气吸入胸廓的下部和后侧，可以避免耸肩并保持腹肌的轻微收紧状态。"
-            },
-            {
-                q: "普拉提呼吸模式中，呼气时腹部深层肌肉的正确收缩感觉是？",
-                options: ["腹部向外鼓起", "肚脐向脊柱方向内收 (激活腹横肌)", "仅仅是胸廓下降", "腰部用力向下压"],
-                ans: 1,
-                rationale: "呼气时，腹横肌像紧身胸衣一样收缩，感觉是肚脐轻轻向脊柱方向拉回，以稳定核心。"
-            },
-            {
-                q: "脊柱的正常生理弯曲在矢状面 (Sagittal Plane) 上呈现出什么形状？",
-                options: ["颈椎前凸，胸椎后凸，腰椎前凸", "颈椎后凸，胸椎前凸，腰椎后凸", "完全笔直的一条直线", "颈椎和腰椎后凸，胸椎前凸"],
+                q: "菱形肌 (Rhomboids) 和前锯肌 (Serratus Anterior) 虽然功能看似相反，但它们作为一对力偶 (Force Couple)，共同作用于维持哪个关节的动态稳定？",
+                options: [
+                    "肩胛胸廓关节 (Scapulothoracic Joint) 的平稳贴合与滑动",
+                    "盂肱关节 (Glenohumeral Joint) 的纯粹旋转运动",
+                    "锁骨胸骨关节 (Sternoclavicular Joint) 的下沉与抬高",
+                    "肩锁关节 (Acromioclavicular Joint) 的外展与内收"
+                ],
                 ans: 0,
-                rationale: "健康的脊柱具有自然的曲线：颈椎和腰椎向身体前方凸起（前凸 Lordosis），胸椎向后方凸起（后凸 Kyphosis）。"
+                rationale: "菱形肌向后拉，前锯肌向前拉。两者在健康状态下维持着精妙的张力平衡，使肩胛骨能够紧密平滑地贴在胸廓上滑动，防止翼状肩胛 (Winging Scapula)。"
             },
             {
-                q: "在“短脊柱按摩” (Short Spine Massage) 动作中，滑板应该在什么时候开始返回起始位置（滑向缓冲器）？",
-                options: ["当双腿刚开始向头部翻转时", "当脊柱逐节降下 (Articulation) 到垫子上时", "当腘绳肌感觉到拉伸时", "在动作的整个过程中滑板都必须保持不动"],
+                q: "以下哪一块下肢肌肉属于单一功能的髋关节伸展肌 (Hip Extensor)，完全不跨越膝关节？",
+                options: [
+                    "半腱肌 (Semitendinosus)",
+                    "股二头肌长头 (Long Head of Biceps Femoris)",
+                    "臀大肌 (Gluteus Maximus)",
+                    "半膜肌 (Semimembranosus)"
+                ],
+                ans: 2,
+                rationale: "腘绳肌群（半腱、半膜、二头肌长头）既伸髋又屈膝。而臀大肌起自髂骨和骶骨，止于股骨大转子下方和髂胫束，不跨越膝关节，是纯粹且最强大的髋伸肌。"
+            },
+            {
+                q: "在 '短箱系列 - 侧弯' (Short Box - Side Bend) 练习中，身体抗重力向上侧屈并维持控制的主要发力肌肉组是？",
+                options: [
+                    "向地板一侧（下方）的腹内/外斜肌和腰方肌 (Lower Obliques and Quadratus Lumborum)",
+                    "背向重力一侧（上方）的腹内/外斜肌和腰方肌 (Upper Obliques and Quadratus Lumborum)",
+                    "双侧的竖脊肌 (Bilateral Erector Spinae) 和 腹直肌 (Rectus Abdominis)",
+                    "肩胛骨下回旋肌群 (Downward Rotators of the Scapula)"
+                ],
                 ans: 1,
-                rationale: "滑板的返回是由脊柱自上而下逐节降下（从胸椎到尾骨）的过程来控制的，这需要极强的腹部离心控制。"
+                rationale: "侧弯练习挑战的是抗重力侧（朝向天花板那一侧）侧线肌肉的离心（下放阶段）和向心（拉起阶段）收缩能力。"
             },
             {
-                q: "骨盆的“中立位” (Neutral Pelvis) 是指哪两个骨骼标志在同一个额状面上？",
-                options: ["髂前上棘 (ASIS) 和 坐骨结节", "大转子 和 耻骨联合", "髂前上棘 (ASIS) 和 耻骨联合 (Pubic Symphysis)", "髂后上棘 (PSIS) 和 尾骨"],
-                ans: 2,
-                rationale: "当人仰卧时，如果ASIS和耻骨联合形成一个与地板平行的平面，骨盆即处于中立位。"
+                q: "在 '侧卧系列' (Side-Lying Series) 中，为了维持骨盆在额状面 (Frontal Plane) 的绝对稳定，防止下侧腰部塌陷贴向垫子，哪一部分肌肉需要进行强烈的等长收缩？",
+                options: [
+                    "上方的臀中肌 (Upper Gluteus Medius)",
+                    "下侧（靠近垫子）的腹斜肌和腰方肌 (Lower Obliques and Quadratus Lumborum)",
+                    "下方的梨状肌 (Lower Piriformis)",
+                    "上方的阔筋膜张肌 (Upper Tensor Fasciae Latae)"
+                ],
+                ans: 1,
+                rationale: "客户必须维持下侧腰部与垫子之间的小缝隙（俗称鼠洞）。这要求底部的侧腰肌肉克服重力进行等长收缩，像桥墩一样支撑住骨盆和脊柱的中立位。"
             },
             {
-                q: "以下哪块肌肉属于肩袖肌群 (Rotator Cuff)？",
-                options: ["胸大肌 (Pectoralis Major)", "大圆肌 (Teres Major)", "冈上肌 (Supraspinatus)", "背阔肌 (Latissimus Dorsi)"],
-                ans: 2,
-                rationale: "肩袖肌群包括冈上肌、冈下肌、小圆肌和肩胛下肌，负责稳定盂肱关节。"
-            },
-            {
-                q: "在进行“划船系列后部 - 拥抱树木” (Rowing Back - Hug a Tree) 时，主要的向心收缩肌肉是？",
-                options: ["胸大肌 (Pectoralis Major)", "菱形肌 (Rhomboids)", "背阔肌 (Latissimus Dorsi)", "中斜方肌 (Middle Trapezius)"],
-                ans: 0,
-                rationale: "双臂像抱树一样在胸前合拢，这是一个肩关节水平内收的动作，主要由胸大肌发力。"
-            },
-            {
-                q: "理想姿势的侧面铅垂线 (Plumb Line) 不应该经过以下哪个点？",
-                options: ["耳垂 (Lobe of the ear)", "肩峰 (Acromion process)", "大转子 (Greater trochanter)", "膝关节正前方 (Anterior to the knee joint)"],
+                q: "骨盆底肌 (Pelvic Floor Muscles) 的主要组成部分——提肛肌 (Levator Ani)，其肌群结构不包括以下哪一块？",
+                options: [
+                    "耻骨尾骨肌 (Pubococcygeus)",
+                    "髂骨尾骨肌 (Iliococcygeus)",
+                    "耻骨直肠肌 (Puborectalis)",
+                    "梨状肌 (Piriformis)"
+                ],
                 ans: 3,
-                rationale: "铅垂线应该经过膝关节轴的稍偏前方（髌骨后方），而不是完全在膝盖的正前方。"
+                rationale: "梨状肌虽然位于骨盆深处，但它属于髋关节的深层外旋肌 (Deep Six External Rotators)，起自骶骨前面，止于大转子，不属于构成盆底吊床的提肛肌群。"
             },
             {
-                q: "腹内斜肌 (Internal Oblique) 的单侧收缩会产生什么动作？",
-                options: ["使脊柱向对侧旋转", "使脊柱向同侧旋转", "使脊柱伸展", "使骨盆前倾"],
-                ans: 1,
-                rationale: "腹内斜肌单侧收缩时，会拉动躯干向同侧侧屈和旋转；而腹外斜肌则负责向对侧旋转。"
-            },
-            {
-                q: "普拉提塑身机上，标准的“红色”弹簧通常代表什么阻力？",
-                options: ["四分之一弹簧", "半弹簧", "1个全弹簧 (Full spring)", "超级重弹簧"],
-                ans: 2,
-                rationale: "在Merrithew (STOTT) 塑身机上，红色是全阻力弹簧，蓝色是半弹簧，白色是四分之一弹簧。"
-            },
-            {
-                q: "在“胃部按摩 - 扭转” (Stomach Massage - Twist) 中，脊柱处于什么状态？",
-                options: ["均匀屈曲 (C型曲线) 并旋转", "伸直 (中立位/平背) 并向一侧旋转", "过度伸展并旋转", "完全放松"],
-                ans: 1,
-                rationale: "Twist变体要求客户从坐骨上向上拔高脊柱（平背/中立位），然后在轴向上进行胸椎旋转。"
-            },
-            {
-                q: "哪种体态的人通常伴随着胸大肌和胸小肌的严重缩短/紧张？",
-                options: ["平背 (Flat Back)", "摇摆背 (Sway Back)", "驼背 (Kyphosis/圆肩)", "腰椎过度前凸 (Lordosis)"],
-                ans: 2,
-                rationale: "驼背伴随圆肩体态，身体前侧的胸部肌肉通常紧绷缩短，而后背的肩胛骨回缩肌群通常无力拉长。"
-            },
-            {
-                q: "腘绳肌 (Hamstrings) 极度紧绷通常会导致骨盆在站立或坐姿时发生什么倾斜？",
-                options: ["骨盆前倾 (Anterior Tilt)", "骨盆后倾 (Posterior Tilt)", "骨盆侧倾", "骨盆前移"],
-                ans: 1,
-                rationale: "腘绳肌附着在坐骨结节上，当它们紧绷时，会向下拉动骨盆后部，导致骨盆后倾。"
-            },
-            {
-                q: "“侧卧系列” (Side-Lying Series) 练习主要锻炼骨盆和髋部的哪种稳定性？",
-                options: ["矢状面稳定性", "冠状面 / 额状面稳定性 (防止骨盆侧倾和下沉)", "水平面稳定性", "肩胛带稳定性"],
-                ans: 1,
-                rationale: "侧卧时抬起上方的腿，底部的臀中肌和腰方肌必须稳定骨盆，防止其在冠状面上向地板塌陷。"
-            },
-            {
-                q: "人类的颈椎 (Cervical Spine) 共有多少块椎骨？",
-                options: ["5块", "7块", "12块", "9块"],
-                ans: 1,
-                rationale: "颈椎由7块椎骨组成（C1-C7），负责头部的支撑和高度灵活的运动。"
-            },
-            {
-                q: "骨盆底肌 (Pelvic Floor) 通常与哪块核心深层肌肉同步共同收缩，以维持腹内压和核心稳定？",
-                options: ["腹直肌", "竖脊肌", "腹横肌 (Transversus Abdominis)", "背阔肌"],
-                ans: 2,
-                rationale: "骨盆底肌（底部）和腹横肌（四周）以及横膈膜（顶部）共同构成了核心的深层“圆柱体”。"
-            },
-            {
-                q: "踝关节跖屈 (Plantar flexion，即绷脚尖) 时，主要发力的肌肉是？",
-                options: ["胫骨前肌 (Tibialis Anterior)", "腓肠肌和比目鱼肌 (小腿三头肌)", "股直肌", "腘绳肌"],
-                ans: 1,
-                rationale: "腓肠肌和比目鱼肌位于小腿后侧，收缩时拉动脚跟向上，脚尖向下（跖屈）。"
-            },
-            {
-                q: "普拉提基本原则“肩胛骨的运动和稳定”中，肩胛骨的理想中立位置应该是？",
-                options: ["紧紧挤压在一起", "完全放松向前掉落", "平贴在胸廓后侧，不耸肩，也不过度向后夹紧", "尽可能用力向下拉向臀部"],
-                ans: 2,
-                rationale: "肩胛骨应该平滑地贴在肋骨上（V字型贴合），保持在自然放松的中间宽度，避免任何方向的过度用力。"
-            },
-            {
-                q: "在塑身机上做“前弓步” (Forward Lunge) 拉伸时，主要目的是什么？",
-                options: ["加强支撑腿的腘绳肌", "拉伸站立/支撑腿的髋屈肌 (Hip Flexors)", "加强前侧腿的股四头肌", "拉伸小腿"],
-                ans: 1,
-                rationale: "前弓步将一条腿向后推远，使髋关节处于伸展状态，极佳地拉伸了髂腰肌和股直肌等髋屈肌。"
-            },
-            {
-                q: "什么是等长收缩 (Isometric Contraction)？",
-                options: ["肌肉产生张力并变短", "肌肉产生张力并变长", "肌肉产生张力，但肌肉长度和关节角度不发生改变", "肌肉交替快速收缩和放松"],
-                ans: 2,
-                rationale: "等长收缩通常用于维持姿势和提供稳定性，如平板支撑。"
-            },
-            {
-                q: "哪块肌肉是髋关节外展 (Hip Abduction) 的原动肌？",
-                options: ["内收大肌 (Adductor Magnus)", "臀中肌 (Gluteus Medius)", "股直肌 (Rectus Femoris)", "半腱肌 (Semitendinosus)"],
-                ans: 1,
-                rationale: "臀中肌位于骨盆外侧，收缩时将腿向侧边抬起（外展），并在单腿站立时保持骨盆水平。"
-            },
-            {
-                q: "在“短箱系列 - 树” (Short Box - Tree) 练习中，脊柱向后伸展下落时，腹直肌在进行什么收缩？",
-                options: ["向心收缩", "离心收缩 (Eccentric Contraction)", "等长收缩", "完全放松"],
-                ans: 1,
-                rationale: "向后仰时，重力试图将上半身拉向下。腹肌必须主动发力但逐渐被拉长（离心），以控制下落的速度并保护腰椎。"
-            },
-            {
-                q: "在进行“手臂系列 - 仰卧”时，如果客户在将绑带向下拉向大腿时肋骨过度“爆开”(popping)，这说明什么？",
-                options: ["腹斜肌的力量不足以对抗背阔肌/胸肌的张力", "弹簧阻力太轻", "呼吸方式正确", "颈椎不稳定"],
-                ans: 0,
-                rationale: "下拉手臂会拉扯附着在肋骨上的肌肉（如背阔肌）。如果腹斜肌不启动来锁定肋骨，肋骨就会被迫翘起。"
-            },
-            {
-                q: "如果一个客户呈现明显的“翼状肩胛” (Winging Scapula)，通常说明哪块肌肉极度无力？",
-                options: ["前锯肌 (Serratus Anterior)", "背阔肌 (Latissimus Dorsi)", "上斜方肌 (Upper Trapezius)", "胸大肌 (Pectoralis Major)"],
-                ans: 0,
-                rationale: "前锯肌负责将肩胛骨内侧缘紧紧压在胸廓上。它若无力，肩胛骨内侧就会像翅膀一样翘起。"
-            },
-            {
-                q: "踝关节背屈 (Dorsiflexion，即勾脚尖) 的主要发力肌肉是？",
-                options: ["腓肠肌 (Gastrocnemius)", "比目鱼肌 (Soleus)", "胫骨前肌 (Tibialis Anterior)", "胫骨后肌 (Tibialis Posterior)"],
-                ans: 2,
-                rationale: "胫骨前肌位于小腿前侧，收缩时向上拉动脚背，使脚趾靠近小腿。"
-            },
-            {
-                q: "普拉提动作中强调的“脊柱逐节运动” (Articulation/Roll through) 有什么主要好处？",
-                options: ["增加肌肉体积", "减少卡路里消耗", "改善脊柱节段间的灵活性，使压力均匀分布，避免个别椎间盘受力过大", "锁定所有关节"],
-                ans: 2,
-                rationale: "通过让每一节脊椎依次移动，可以打破脊柱僵硬的死角，恢复其天然的减震功能。"
-            },
-            {
-                q: "“背部划船系列 - 犁地” (Rowing Back - Plow) 中，将手臂向后推时，肩关节的主要动作是？",
-                options: ["屈曲 (Flexion)", "伸展 (Extension)", "内旋 (Internal Rotation)", "外展 (Abduction)"],
-                ans: 1,
-                rationale: "手臂在身体两侧向后上方推开，这是典型的肩关节伸展动作，主要锻炼背阔肌和三角肌后束。"
-            },
-            {
-                q: "哪一块肌肉是人体最主要的呼吸肌，在吸气时收缩并向下移动？",
-                options: ["胸锁乳突肌", "横膈膜 (Diaphragm)", "腹直肌", "肋间内肌"],
-                ans: 1,
-                rationale: "横膈膜呈降落伞状，吸气时它收缩变平并向下移动，扩大胸腔容积从而吸入空气。"
-            },
-            {
-                q: "在“半脚尖” (Half Toe) 站立或 Footwork 练习中，重量应该分布在脚部的哪里？",
-                options: ["全部在第一脚趾（大脚趾）上", "全部在小脚趾上", "在跖骨球部（第一到第五跖骨头）之间均匀分布", "在足弓中心"],
-                ans: 2,
-                rationale: "重量应横跨整个前脚掌（从大脚趾根部到小脚趾根部）均匀分布，以保持踝关节正中对齐，防止内外翻。"
-            },
-            {
-                q: "何时应该明确避免让客户使用骨盆“印记” (Imprint) 位置？",
-                options: ["当双腿在空中进行开链运动时", "当客户有强烈的腰痛发作时", "当处于站立姿势或进行闭链运动（如深蹲、Footwork）时", "仰卧且腹肌无力时"],
-                ans: 2,
-                rationale: "印记仅用于开链运动中保护腰椎。在双脚有支撑的闭链运动中，必须使用中立位以实现正确的下肢力学。"
-            },
-            {
-                q: "STOTT PILATES 推荐的默认仰卧颈部放置原则是：如果颈椎处于中立位，下巴应该处于什么位置？",
-                options: ["下巴用力指向天花板", "下巴紧贴胸口", "下巴与额头大致齐平（水平）", "下巴应低于额头"],
-                ans: 2,
-                rationale: "下巴和额头水平对齐表明颈椎处于自然的微凸中立位。对于驼背客户，通常需要在头下垫一个小枕头来实现这一点。"
-            },
-            {
-                q: "髋关节伸展 (Hip Extension) 的主要原动肌是？",
-                options: ["髂腰肌 (Iliopsoas)", "股直肌 (Rectus Femoris)", "臀大肌 (Gluteus Maximus)", "阔筋膜张肌 (TFL)"],
-                ans: 2,
-                rationale: "臀大肌是人体最强大有力的髋部伸展肌，负责在起立、跳跃或向后推腿时发力。"
-            },
-            {
-                q: "在“膝部伸展系列 - 平背” (Knee Stretches - Straight Back) 中，脊柱和骨盆的关系是？",
-                options: ["脊柱不停地屈伸，骨盆固定", "骨盆不断前后倾斜，脊柱固定", "整个脊柱和骨盆保持中立位作为整体不动，运动仅发生髋关节和膝关节", "上半身随滑板一起前后移动"],
-                ans: 2,
-                rationale: "这是一个极佳的核心稳定练习，要求客户在四足支撑下保持背部平坦，仅用下肢力量推拉滑板。"
-            },
-            {
-                q: "在解剖学中，什么是“肌肉的协同肌” (Synergist)？",
-                options: ["与动作方向完全相反的肌肉", "协助原动肌完成特定动作的肌肉", "唯一产生力量的肌肉", "在动作中完全放松的肌肉"],
-                ans: 1,
-                rationale: "例如，在进行卷腹时，腹外斜肌和腹内斜肌就是腹直肌的协同肌，它们共同产生脊柱屈曲。"
-            },
-            {
-                q: "在做“百次拍击” (The Hundred) 准备动作时，上半身卷起前，颈椎的起手动作必须是？",
-                options: ["过度伸展颈部", "颅椎屈曲 (Head Nod / 轻轻点头)", "向左侧转头", "耸起肩膀"],
-                ans: 1,
-                rationale: "Head Nod 会拉长颈部后侧，激活深层颈屈肌，确保在接下来的上胸椎卷起中颈椎得到支撑。"
-            },
-            {
-                q: "当从仰卧姿势完全卷起 (Roll Up) 坐直的过程中，主要的腹肌激活顺序/功能是？",
-                options: ["仅腹直肌工作", "腹横肌首先稳定骨盆/腰椎，随后腹直肌和腹斜肌产生脊柱逐节屈曲", "完全靠背阔肌拉起", "仅髂腰肌发力"],
-                ans: 1,
-                rationale: "深层核心（腹横肌）必须先打底提供稳定平台，然后表层肌肉（腹直肌/斜肌）才能有效产生动作。"
-            },
-            {
-                q: "在“侧分腿” (Side Splits) 练习中，如果设置了较重的弹簧，它主要锻炼什么？",
-                options: ["推开滑板时外展肌的离心收缩", "推开滑板时内收肌的离心收缩", "回收滑板时内收肌的向心收缩", "回收滑板时外展肌的向心收缩"],
-                ans: 2,
-                rationale: "重弹簧会自己把滑板拉回来。客户需要通过强大的内收肌向心发力（夹紧双腿）来克服弹簧力或控制其速度。"
-            },
-            {
-                q: "“大象式” (Elephant) 练习中，脚后跟应该如何放置？",
-                options: ["始终高高踮起", "始终平贴在滑板上（如果跟腱柔韧性允许）", "一只脚贴紧，一只脚踮起", "脚跟悬空在滑板外面"],
-                ans: 1,
-                rationale: "脚跟着地是实现身体后侧链（腘绳肌、小腿三头肌）深度拉伸的关键要求。"
-            },
-            {
-                q: "胸锁乳突肌 (Sternocleidomastoid) 单侧收缩的功能是？",
-                options: ["使头部向后仰", "使头部向同侧旋转", "使头部向对侧旋转并向同侧侧屈", "使肩胛骨上提"],
-                ans: 2,
-                rationale: "右侧胸锁乳突肌收缩时，会让你向右侧歪头（侧屈），但脸会转向左侧（对侧旋转）。"
-            },
-            {
-                q: "多裂肌 (Multifidus) 的主要功能是？",
-                options: ["产生大幅度的脊柱屈曲", "提供脊柱节段间的深层稳定和微调", "作为主要的肩关节伸展肌", "负责深呼吸"],
-                ans: 1,
-                rationale: "多裂肌是深藏在脊柱后侧的小肌肉，连接相邻的椎骨，对维持脊柱的局部绝对稳定至关重要。"
-            },
-            {
-                q: "在进行“下半身抬起” (Bottom Lift / 臀桥) 时，身体的重量应该落在哪里？应该绝对避免什么情况？",
-                options: ["落在颈椎上；避免胸椎承重", "落在肩峰上；避免腰椎承重", "落在两肩胛骨之间和胸椎上部；绝对避免颈椎过度承重", "落在头顶上；避免肩膀接触垫子"],
-                ans: 2,
-                rationale: "桥式动作的最高点应该只推到肩胛骨底部，绝对不能将体重压在脆弱的颈椎上。"
-            },
-            {
-                q: "如果客户在“脚部动作 - V型脚趾” (Footwork - Toes in V) 时，膝盖无法张开对准脚趾的方向，教练应该怎么做？",
-                options: ["强迫客户把膝盖往外压", "缩小脚跟并拢时的V字张开角度，以适应客户髋关节的自然外旋受限", "增加弹簧重量", "让客户换成脚跟分开站立"],
-                ans: 1,
-                rationale: "永远不要强迫关节扭转。如果髋关节外旋受限（无法像芭蕾舞者那样打开），就必须缩小脚部的V字角度，确保膝盖与脚趾始终在同一条直线上。"
-            },
-            {
-                q: "“短箱系列 - 侧弯” (Short Box - Side Bend) 重点锻炼哪块肌肉？",
-                options: ["仅腹直肌", "胸大肌", "腹内、外斜肌和腰方肌 (Quadratus Lumborum)", "臀大肌"],
-                ans: 2,
-                rationale: "侧弯是强大的冠状面核心练习，抗重力的一侧的腹斜肌和腰方肌必须进行极强的离心和向心收缩。"
-            },
-            {
-                q: "肩关节水平外展 (Horizontal Abduction) 的主要发力肌肉是？",
-                options: ["胸大肌", "三角肌前束", "三角肌后束 (Posterior Deltoid)", "背阔肌"],
-                ans: 2,
-                rationale: "例如在“手臂系列 - 侧平举”中将手臂向后侧打开，主要由三角肌后束和部分背部肌肉发力。"
-            },
-            {
-                q: "“胃部按摩系列” (Stomach Massage Series) 的常规起始弹簧设置通常是多少？",
-                options: ["1个半弹簧", "4个全弹簧", "3个全弹簧 (或2全1半)", "不使用弹簧"],
-                ans: 2,
-                rationale: "这是一个需要下肢爆发力和深层腹部支撑的动作，通常从较重的3个弹簧开始，随着系列推进（失去手臂支撑）再逐渐减轻弹簧。"
-            },
-            {
-                q: "患有急性坐骨神经痛 (Sciatica) 的客户通常需要避免哪种动作组合？",
-                options: ["脊柱伸展伴随膝关节屈曲", "骨盆中立位下的等长收缩", "极端的髋关节屈曲伴随深度的脊柱屈曲 (如强烈的直腿后侧拉伸)", "轻微的肩关节外展"],
-                ans: 2,
-                rationale: "极度的前弯和直腿拉伸会进一步拉扯和刺激已经发炎的坐骨神经，导致疼痛加剧。"
-            },
-            {
-                q: "肩胛骨下回旋 (Downward Rotation) 的肌肉主要包括？",
-                options: ["前锯肌和上斜方肌", "菱形肌和胸小肌", "三角肌和胸大肌", "肱二头肌和肱三头肌"],
-                ans: 1,
-                rationale: "当手臂从高举过头的状态放下来时，菱形肌向上拉肩胛骨内侧，胸小肌向下拉肩胛骨前侧，共同产生下回旋。"
-            },
-            {
-                q: "“短箱系列 - 扭转” (Short Box - Twist) 中，旋转的轴心是？",
-                options: ["髋关节", "脊柱的纵轴 (Central vertical axis of the spine)", "肩关节", "膝关节"],
-                ans: 1,
-                rationale: "客户必须保持平背，想象脊柱是一根垂直的柱子，整个胸廓和肩膀围绕这根柱子进行水平面的纯旋转。"
-            },
-            {
-                q: "骨盆基底 (Pelvic Floor) 肌肉的功能不包括以下哪项？",
-                options: ["支撑骨盆腔内的脏器", "维持括约肌的闭合控制", "与腹横肌协同维持核心腹内压", "使脊柱强力伸展"],
+                q: "在 '膝部伸展系列 - 圆背' (Knee Stretches - Round Back) 的起始位置中，骨盆必须处于何种特定的状态以确保腰椎安全？",
+                options: [
+                    "骨盆极度前倾 (Anterior Tilt)，以激活腰部竖脊肌",
+                    "骨盆处于完美的解剖学中立位 (Neutral Pelvis)",
+                    "骨盆发生水平面旋转 (Transverse Rotation)，以激活单侧腹斜肌",
+                    "骨盆处于深度的后倾/印记状态 (Deep Posterior Tilt / Imprint)"
+                ],
                 ans: 3,
-                rationale: "骨盆底肌位于骨盆最底部，没有附着在脊柱上，因此无法使脊柱产生伸展运动。"
+                rationale: "为了创造深度的脊柱 C 型屈曲 (C-Curve) 并防止沉重的弹簧拉扯导致腰椎前凸，腹直肌和腹斜肌必须强力收缩，使骨盆深度后倾。"
             },
             {
-                q: "什么是开放动力链 (Open Kinetic Chain) 运动？",
-                options: ["远端（手或脚）固定在一个固体表面上的运动", "远端（手或脚）在空间中自由移动的运动", "只能在机器上进行的运动", "所有普拉提垫上运动"],
+                q: "当脚掌用力向下踩（例如在 Footwork 中做 '半脚尖' 动作时），这个踝关节的动作在专业解剖学上称为什么？",
+                options: [
+                    "背屈 (Dorsiflexion) - 主要由胫骨前肌 (Tibialis Anterior) 驱动",
+                    "跖屈 (Plantar Flexion) - 主要由腓肠肌 (Gastrocnemius) 和比目鱼肌 (Soleus) 驱动",
+                    "内翻 (Inversion) - 主要由胫骨后肌 (Tibialis Posterior) 驱动",
+                    "外翻 (Eversion) - 主要由腓骨长短肌 (Peroneus Longus/Brevis) 驱动"
+                ],
                 ans: 1,
-                rationale: "在开链运动中（如仰卧在垫子上双腿在空中画圈），远端自由移动。这通常对核心稳定的要求更高。"
+                rationale: "跖屈 (Plantar Flexion) 是将脚尖指向远离小腿方向的动作（绷脚背），这是小腿三头肌后侧链对抗弹簧阻力的主要机制。"
             },
             {
-                q: "什么是闭合动力链 (Closed Kinetic Chain) 运动？",
-                options: ["远端（手或脚）固定在固体或有阻力的表面上，近端身体移动的运动", "远端自由移动的运动", "眼睛闭上的运动", "仅限于手臂的运动"],
-                ans: 0,
-                rationale: "如深蹲或塑身机上的Footwork（脚蹬在脚踏杆上），脚是固定的，身体随着滑板移动，属于闭链运动。"
-            },
-            {
-                q: "在“侧卧系列 - 腿部上下” (Side-Lying - Leg Up and Down) 中，腿部向上抬起的最高点应限制在哪里？",
-                options: ["尽可能高，直到碰到头", "骨盆开始移动或腰部开始侧屈（代偿）的临界点", "与肩膀同高", "离地仅仅2厘米"],
-                ans: 1,
-                rationale: "普拉提强调质量胜于幅度。只要骨盆失去稳定（腰部缩短），动作就应该停止。纯粹的髋外展范围其实很小。"
-            },
-            {
-                q: "普拉提中的“核心” (Core / Powerhouse) 通常不包括哪块肌肉？",
-                options: ["腹横肌", "多裂肌", "横膈膜", "肱二头肌"],
+                q: "在进行 '划船系列前部 - 献上' (Rowing Front - Offering) 时，将手臂从身体两侧向正前方及上方抬起，此时肩关节 (Shoulder Joint) 正在执行什么动作？",
+                options: [
+                    "肩关节伸展 (Shoulder Extension)",
+                    "肩关节内收 (Shoulder Adduction)",
+                    "肩胛骨下回旋 (Downward Rotation)",
+                    "肩关节前屈 (Shoulder Flexion)"
+                ],
                 ans: 3,
-                rationale: "肱二头肌是手臂肌肉。普拉提核心通常指连接骨盆、肋骨和脊柱的躯干肌肉群。"
+                rationale: "手臂在矢状面上向前向上抬起的动作称为屈曲 (Flexion)，主要由三角肌前束 (Anterior Deltoid) 和胸大肌上部纤维驱动。"
             },
             {
-                q: "脊柱前凸 (Lordosis) 的客户在进行仰卧开链练习时，通常需要什么特别的辅助或提示？",
-                options: ["直接让腰部悬空", "在腰部垫一个极高的大枕头强制其平坦", "可能需要使用印记骨盆，或者在头下/膝下垫薄垫以减轻下背张力", "要求其用力做骨盆前倾"],
+                q: "关于 '美人鱼式' (Mermaid) 练习的生物力学特征，以下哪项描述是最严谨的？",
+                options: [
+                    "这是一个在矢状面 (Sagittal Plane) 上强调脊柱屈伸 (Flexion/Extension) 的动作",
+                    "练习过程中，对侧骨盆必须随着脊柱的弯曲而大幅度抬离支撑面",
+                    "这是一个主要发生在冠状面/额状面 (Frontal/Coronal Plane) 上，强调脊柱侧屈 (Lateral Flexion) 和同侧腹斜肌拉伸的动作",
+                    "这是一个纯粹依靠下肢闭链驱动 (Closed-Chain Lower Extremity Driven) 的核心稳定练习"
+                ],
                 ans: 2,
-                rationale: "前凸客户下背部通常紧绷，仰卧抬腿容易腰痛。引导他们使用印记骨盆（腹斜肌发力）能有效支撑腰椎。"
+                rationale: "美人鱼式是普拉提中最经典的侧屈拉伸，要求坐骨牢牢锚定在机器上，从而最大化拉伸抗重力侧的腰方肌、肋间肌和背阔肌。"
             },
             {
-                q: "“前锯肌”无力最容易在哪个动作中暴露出来（表现为翼状肩胛）？",
-                options: ["仰卧起坐", "俯卧撑准备或四足支撑 (Push Up prep / Four-point kneeling)", "深蹲", "天鹅式"],
-                ans: 1,
-                rationale: "在双手撑地的负重姿势下，如果前锯肌无力，胸廓会从肩胛骨之间掉下去，导致肩胛骨内侧缘翘起。"
-            },
-            {
-                q: "在普拉提训练的哲学中，其最终目的是什么？",
-                options: ["举起最大的重量", "跑得最快", "实现神经肌肉平衡、核心控制、以及在日常生活和运动中的功能性效率", "达到极限的柔韧性，像杂技演员一样"],
+                q: "如果一位客户在进行仰卧的 '双腿伸展' (Double Leg Stretch) 或 '百次拍击' (The Hundred) 动作时，腰部不受控制地离开垫子向上拱起，这表明他/她缺乏哪种特定的身体控制能力？",
+                options: [
+                    "肩胛带前伸 (Scapular Protraction) 的控制能力",
+                    "颈椎深层屈曲 (Deep Cervical Flexion) 的稳定性",
+                    "对抗强大的髋屈肌群 (Hip Flexors) 拉力，维持骨盆和腰椎稳定（腹横肌及腹斜肌力量不足）的能力",
+                    "踝关节背屈 (Ankle Dorsiflexion) 的稳定性"
+                ],
                 ans: 2,
-                rationale: "普拉提不仅仅是锻炼肌肉，更在于重新编程中枢神经系统，建立高效、无痛、平衡的运动模式。"
+                rationale: "当沉重的双腿向外伸展时，髂腰肌和股直肌会产生巨大的力量试图将骨盆拉向前倾。如果腹部肌肉（尤其是下腹部）不够强壮来对抗这股力量，腰椎就会被迫拱起离开垫子。"
             },
             {
-                q: "在进行“拉伸系列 - 腹部拉伸” (Stretches - Abdominals) 如向上眼镜蛇姿势时，主要应该避免什么？",
-                options: ["深呼吸", "将压力全部集中在下腰椎处折叠", "伸展胸椎", "保持肩膀远离耳朵"],
-                ans: 1,
-                rationale: "脊柱伸展应该是一个均匀的弧线，如果仅仅在腰椎处折弯（通常因为胸椎僵硬），极易导致腰椎挤压受伤。"
+                q: "斯多特普拉提提倡的 '三维/肋间呼吸法' (Three-Dimensional / Intercostal Breathing)，在吸气阶段强调将空气引导至何处？",
+                options: [
+                    "仅使前腹壁大幅凸起，即纯粹的腹式呼吸 (Diaphragmatic Belly Breathing)",
+                    "引导至胸廓的上部，伴随显著的锁骨和肩膀上提 (Apical Breathing)",
+                    "仅局限于背部肌肉的膨胀，忽略侧向扩张",
+                    "重点扩张胸廓的下部和后侧 (Lower and Posterior Rib Cage)，同时维持腹横肌 (TrA) 的轻度张力"
+                ],
+                ans: 3,
+                rationale: "这种呼吸方式允许在吸气时保持核心（腹部）的轻度收紧状态，从而在整个呼吸周期中不间断地保护腰椎，这是普拉提运动区别于瑜伽呼吸的关键特征。"
             },
             {
-                q: "在“短箱系列”中，如果客户脚部脱离绑带，最可能的原因是？",
-                options: ["腿太短", "在向后倾斜时，没有持续维持脚背勾起（背屈）和向上的对抗张力", "箱子太滑", "绑带太紧"],
-                ans: 1,
-                rationale: "客户必须主动勾脚尖并向外向上顶住绑带，利用腿部前侧力量将自己“锚定”在箱子上。"
+                q: "在 '短脊柱按摩' (Short Spine Massage) 的向心上卷阶段，滑板尚未移动时，身体需要通过何种肌肉群的收缩将骨盆剥离滑板？",
+                options: [
+                    "利用脚部强力踩踏绑带产生的下肢反作用力 (Ground Reaction Force)",
+                    "通过肱三头肌 (Triceps) 和背阔肌 (Latissimus Dorsi) 用力向下压垫子",
+                    "颈部伸肌 (Cervical Extensors) 向后猛烈仰头的冲量",
+                    "腹斜肌 (Obliques) 和腹直肌 (Rectus Abdominis) 的强力向心收缩，自下而上产生脊柱的逐节屈曲 (Spinal Articulation)"
+                ],
+                ans: 3,
+                rationale: "虽然绑带提供了一定的拉力辅助，但教练必须重点提示客户启动腹肌（深化骨盆后倾），用核心的力量而非惯性将脊柱一节节卷起离开滑板。"
             },
             {
-                q: "“髂胫束” (IT Band) 是一条厚厚的筋膜带，它连接了哪里到哪里？",
-                options: ["从颈部到肩膀", "从髂骨（骨盆）外侧一直延伸到胫骨（膝盖下方外侧）", "从腰椎到股骨", "从脚踝到膝盖"],
-                ans: 1,
-                rationale: "阔筋膜张肌和臀大肌都附着在髂胫束上，它的主要功能是稳定膝关节外侧。"
-            },
-            {
-                q: "如果一个客户在进行普拉提时，肩膀总是不自觉地耸起贴近耳朵，教练可以提示他们激活哪块肌肉来协助肩胛骨下降？",
-                options: ["上斜方肌", "肩胛提肌", "下斜方肌 (Lower Trapezius)", "胸锁乳突肌"],
+                q: "胸腰筋膜 (Thoracolumbar Fascia) 在人体后表链及核心力学中扮演着极其重要的角色，它的生物力学功能是？",
+                options: [
+                    "直接收缩以产生快速的脊柱旋转 (Spinal Rotation) 运动",
+                    "作为一个无张力的结缔组织，仅仅覆盖在肌肉表面起保护作用",
+                    "像一条天然的交叉承重带，连接背阔肌 (Latissimus Dorsi) 和对侧臀大肌 (Contralateral Gluteus Maximus)，传递交叉对角线力量并提供腰盆稳定",
+                    "作为主要的原动肌，强力拉动肋骨向下产生极度的脊柱屈曲 (Spinal Flexion)"
+                ],
                 ans: 2,
-                rationale: "下斜方肌位于背部中下方，收缩时会将肩胛骨向下拉向V字形的底部，是上斜方肌（负责耸肩）的拮抗肌。"
+                rationale: "胸腰筋膜不是肌肉但附着着多块关键肌肉（包括腹横肌）。当这些肌肉收缩时，胸腰筋膜被拉紧，形成一个液压式的支撑结构，极大地增强了腰椎的稳定性。"
             },
             {
-                q: "孕妇在第二孕期（16周后）进行普拉提训练时，应绝对避免哪种体位？",
-                options: ["侧卧 (Side-lying)", "四足支撑 (Four-point kneeling)", "仰卧 (Supine)", "坐姿 (Seated)"],
+                q: "在 '半脚尖' (Half Toe) 站立（如在 Footwork 中）时，为了确保踝背屈 (Dorsiflexion) 和跖屈 (Plantar Flexion) 的正确力线，重量分布的理想状态是？",
+                options: [
+                    "重量完全集中在第一跖骨头（大脚趾球部），导致足部外翻 (Eversion)",
+                    "重量完全压在第五跖骨头（小脚趾），导致足部内翻 (Inversion)",
+                    "重量横跨整个跖骨球部（从第一到第五跖骨头）均匀分布，维持足踝在额状面 (Frontal Plane) 的中立对齐",
+                    "重量集中在足弓的最高点，试图拉伸足底筋膜 (Plantar Fascia)"
+                ],
                 ans: 2,
-                rationale: "仰卧位会导致增大的子宫压迫下腔静脉，可能引起仰卧位低血压综合征，减少胎儿供血。应改为侧卧或半仰卧（垫高上半身）。"
+                rationale: "只有当跖骨球部均匀受力时，踝关节才能在矢状面上进行纯粹的屈伸，避免在负重状态下发生危险的内外翻代偿，保护膝关节和髋关节的整体对线。"
             },
             {
-                q: "普拉提呼吸时，呼气阶段骨盆底肌和腹横肌的理想反应是什么？",
-                options: ["用力向下压（像排便一样）", "完全放松", "向外鼓起以扩张腹部", "轻轻收缩上提，腹部向内收缩 (Gently lift and draw inward)"],
-                ans: 3,
-                rationale: "核心深层肌肉在呼气时应像收紧紧身胸衣一样，腹部微微向内收，骨盆底肌轻轻上提以稳定内压。"
-            },
-            {
-                q: "在“摇摆背” (Sway Back) 姿势中，除了骨盆前移和后倾，胸椎通常处于什么状态？",
-                options: ["完全伸直", "过度伸展 (Extension)", "屈曲（后凸增加 Kyphosis）并相对于骨盆向后移位", "侧屈"],
-                ans: 2,
-                rationale: "摇摆背的典型特征是上半身向后倒（胸椎后移且屈曲驼背），以平衡向前推的骨盆。"
-            },
-            {
-                q: "肱二头肌的长头跨越了肩关节，它的起点在哪里？",
-                options: ["肩胛骨的喙突 (Coracoid process)", "肩胛骨的盂下结节", "肱骨大结节", "肩胛骨的盂上结节 (Supraglenoid tubercle)"],
-                ans: 3,
-                rationale: "肱二头肌长头起自肩胛骨盂上结节，短头起自喙突。它们都参与肘部屈曲和一定程度的肩部屈曲。"
-            },
-            {
-                q: "塑身机“协调” (Coordination) 练习的主要生物力学焦点是什么？",
-                options: ["纯粹的下肢力量爆发", "单纯的脊柱伸展柔韧性", "核心稳定下的多关节（肩、肘、髋、膝）协调运动", "拉伸颈部后侧"],
-                ans: 2,
-                rationale: "这是一个复杂的练习，要求在维持上半身卷起（核心稳定）的同时，手脚同时伸展和收回，考验大脑和神经肌肉的控制力。"
-            },
-            {
-                q: "臀小肌 (Gluteus Minimus) 除了参与髋外展，还是主要的髋关节什么肌肉？",
-                options: ["髋内旋肌 (Internal rotator)", "髋外旋肌", "强力伸展肌", "强力内收肌"],
-                ans: 0,
-                rationale: "臀小肌的前部纤维位于髋关节前方侧面，收缩时会将大腿向内旋转。"
-            },
-            {
-                q: "当颈椎处于中立位时，它应该呈现出怎样的自然曲线？",
-                options: ["笔直的一条直线", "轻微的后凸曲线 (Kyphotic curve)", "轻微的前凸曲线 (Lordotic curve / Anterior convex)", "强烈的向左弯曲"],
-                ans: 2,
-                rationale: "健康的颈椎在矢状面上具有轻微的向前凸起的弧度，以支撑头部的重量。"
-            },
-            {
-                q: "在“短脊柱按摩” (Short Spine Massage) 中，是什么力量主要负责将臀部和下背部抬离滑板？",
-                options: ["脚蹬带子的反作用力", "双手用力推垫子", "颈部向后仰的力量", "腹部深层肌肉的强烈向心收缩（自下而上卷动脊柱）"],
-                ans: 3,
-                rationale: "虽然绑带有辅助作用，但教练必须确保客户主要使用腹肌力量（骨盆后倾）来卷起脊柱，而不是生拉硬拽弹簧。"
-            },
-            {
-                q: "客户刚完成全髋关节置换术（后侧入路），教练必须确保他们绝对避免哪些动作组合？",
-                options: ["髋关节外展、外旋、伸展", "髋关节屈曲超过90度、内收跨过身体中线、以及内旋", "膝关节屈伸", "踝关节的跖屈和背屈"],
+                q: "在解剖学中，决定一块肌肉属于 '协同肌' (Synergist) 还是 '拮抗肌' (Antagonist) 的标准是什么？",
+                options: [
+                    "协同肌产生与原动肌完全相反的动作，拮抗肌提供稳定性",
+                    "协同肌辅助原动肌 (Agonist) 完成特定的动作或稳定附着点，拮抗肌则负责产生相反的对抗性动作",
+                    "协同肌是唯一产生力量的肌肉，拮抗肌在任何动作中都必须完全处于放松状态",
+                    "协同肌只在离心收缩时工作，拮抗肌只在向心收缩时工作"
+                ],
                 ans: 1,
-                rationale: "这是后侧入路髋关节置换术后的三大禁忌动作，强行进行极易导致人工关节脱位。"
+                rationale: "例如，在做肱二头肌弯举时，肱肌和肱桡肌是协同肌，它们帮助二头肌屈肘；而肱三头肌则是拮抗肌，它的主要功能是伸肘（在此动作中必须适度放松以允许屈曲发生）。"
             },
             {
-                q: "塑身机上的“长拉伸” (Long Stretch) 练习在垫上普拉提中与之最相似的动作是？",
-                options: ["天鹅式 (Swan)", "美人鱼式 (Mermaid)", "腿部支撑/平板支撑 (Leg Pull Front / Plank)", "百次拍击 (The Hundred)"],
+                q: "当客户从仰卧姿势执行 '完全卷起' (Roll Up) 动作坐直的过程中，腹部肌群理想的激活序列 (Activation Sequence) 是怎样的？",
+                options: [
+                    "表层的腹直肌 (Rectus Abdominis) 单独爆发性收缩",
+                    "深层的腹横肌 (TrA) 优先激活建立腹内压稳定平台，随后腹直肌和腹斜肌 (Obliques) 强力收缩产生脊柱逐节屈曲",
+                    "完全依赖背阔肌 (Latissimus Dorsi) 和胸大肌 (Pectoralis Major) 的上肢拉力带动躯干",
+                    "仅依靠单关节的髂腰肌 (Iliopsoas) 强力发力，脊柱保持平直 (Flat Back) 状态折叠"
+                ],
+                ans: 1,
+                rationale: "普拉提的核心理念是“由内而外”。如果深层稳定肌不先打好地基（稳定骨盆），表层运动肌的强力收缩就会导致腹部鼓起、骨盆晃动或腰椎受压。"
+            },
+            {
+                q: "在 '侧分腿' (Side Splits) 练习中，若教练特意设置了一个非常重 (Heavy) 的弹簧，客户主要将面临哪种肌肉收缩的挑战？",
+                options: [
+                    "在推开滑板阶段，髋外展肌群 (Hip Abductors) 的强力离心收缩 (Eccentric Contraction)",
+                    "在推开滑板阶段，髋内收肌群 (Hip Adductors) 的强力离心收缩 (Eccentric Contraction)",
+                    "在收回滑板阶段，髋内收肌群 (Hip Adductors) 的强力向心收缩 (Concentric Contraction)",
+                    "在收回滑板阶段，髋外展肌群 (Hip Abductors) 的强力向心收缩 (Concentric Contraction)"
+                ],
+                ans: 1,
+                rationale: "重的弹簧会轻易地把滑板拉回来。因此，最大的挑战在于“推开”滑板的过程：虽然外展肌在做向心收缩推开滑板，但内收肌必须进行极度强烈的离心收缩来控制外展的速度，防止滑板被猛然拉开。"
+            },
+            {
+                q: "多裂肌 (Multifidus) 作为脊柱深层横突棘肌群 (Transversospinalis Group) 的重要部分，其核心功能被定义为？",
+                options: [
+                    "产生涉及多个脊柱节段的大幅度宏观屈曲运动 (Gross Spinal Flexion)",
+                    "在动态运动中提供脊柱节段间的微调控制和深层局部稳定性 (Segmental Stabilization)",
+                    "作为肩胛胸廓关节的主要下回旋肌 (Downward Rotator)",
+                    "负责横膈膜 (Diaphragm) 在强制呼气时的向上抬升"
+                ],
+                ans: 1,
+                rationale: "多裂肌紧贴在脊椎骨上，跨越仅仅1-3个椎间关节。它们的作用不是产生大幅度运动，而是在大肌肉发力前提前激活，像无数根小拉杆一样锁定并保护脆弱的椎间盘。"
+            },
+            {
+                q: "在进行 '下半身抬起' (Bottom Lift / 臀桥) 时，由于重力线分布的改变，身体的最高承重点应严格限制在哪里以避免严重损伤？",
+                options: [
+                    "完全落在颈椎 (Cervical Spine) 上，以最大化胸椎伸展幅度",
+                    "落在两侧肩峰 (Acromion Process) 和锁骨上",
+                    "落在两肩胛骨之间及上胸椎节段 (Upper Thoracic Spine)，绝对避免颈椎过度承重甚至受压",
+                    "落在头顶 (Crown of the head) 上，使颈部处于极度伸展状态"
+                ],
                 ans: 2,
-                rationale: "长拉伸本质上是一个移动的平板支撑，要求极致的肩胛带、核心和骨盆的闭链稳定性。"
-            },
-            {
-                q: "腰大肌 (Psoas Major) 作为强大的髋屈肌，它的起点深埋于何处？",
-                options: ["髂骨翼内侧", "坐骨结节", "耻骨联合", "第12胸椎到第5腰椎 (T12-L5) 的椎体和横突"],
-                ans: 3,
-                rationale: "腰大肌直接连接在脊柱上，这意味着极度紧绷的腰大肌会直接将腰椎向前拉扯，增加腰椎压力。"
-            },
-            {
-                q: "在“平背” (Flat Back) 姿势中，哪些肌肉通常被过度拉长且无力？",
-                options: ["腘绳肌和腹直肌", "胸大肌", "小腿三头肌", "髂腰肌（单关节髋屈肌）和腰部竖脊肌"],
-                ans: 3,
-                rationale: "平背伴随骨盆后倾，腰椎前凸消失。因此，使骨盆前倾的肌肉（如髂腰肌和腰部伸肌）被拉长而变得虚弱。"
-            },
-            {
-                q: "在进行 Footwork 系列时，标准的起始位置应确保髋关节和膝关节的屈曲角度不超过多少？",
-                options: ["45度", "120度", "145度", "90度"],
-                ans: 3,
-                rationale: "屈曲超过90度会迫使大多数人的骨盆进入后倾（印记），破坏中立位，并且会对膝关节施加过大压力。通过调整脚踏杆或滑板挡块来避免。"
-            },
-            {
-                q: "在“胃部按摩 - 伸手” (Stomach Massage - Reaching) 变体中，最大的挑战是什么？",
-                options: ["拉伸颈部", "维持极度的脊柱伸展", "在失去手臂支撑的情况下，仅靠核心力量维持骨盆后倾（印记）和深度的脊柱屈曲 (C-curve)", "锻炼手臂力量"],
-                ans: 2,
-                rationale: "当手臂放开不再抓住滑板边缘时，重力会试图将脊柱拉直，客户必须成倍增加腹肌的收缩来维持圆背姿势。"
-            },
-            {
-                q: "俯卧在长箱上进行“拉带子” (Pulling Straps) 的主要目标肌群是？",
-                options: ["腹肌", "髋屈肌群", "胸大肌和三角肌前束", "脊柱伸肌群、背阔肌以及肩胛骨回缩肌群"],
-                ans: 3,
-                rationale: "这是一个极佳的后表链强化动作，对抗驼背/圆肩姿势，强化整个背部、肩膀后侧和脊柱伸肌。"
-            },
-            {
-                q: "肱三头肌的长头跨越了几个关节？",
-                options: ["仅跨越肘关节", "仅跨越肩关节", "不跨越任何关节", "两个（跨越肩关节参与肩伸展，跨越肘关节参与肘伸展）"],
-                ans: 3,
-                rationale: "由于长头附着在肩胛骨的盂下结节上，它不仅伸直手臂，还能协助背阔肌将手臂向后拉（肩伸展）。"
-            },
-            {
-                q: "胸腰筋膜 (Thoracolumbar Fascia) 在核心力学中扮演什么角色？",
-                options: ["负责消化吸收", "像一条天然的负重腰带，连接背阔肌和对侧臀大肌，传递交叉力量并稳定腰盆区", "仅负责连接肋骨", "使脊柱屈曲"],
-                ans: 1,
-                rationale: "胸腰筋膜是背部极度重要的结缔组织网络，腹横肌也附着其上，收缩时拉紧筋膜，为腰椎提供液压式的支撑。"
-            },
-            {
-                q: "在“侧弯” (Mermaid) 练习中，骨盆的最佳锚定状态是？",
-                options: ["靠近弹簧侧的坐骨高高抬起", "双膝完全并拢", "尽可能用手臂支撑全身重量", "两侧坐骨尽可能均匀地沉向垫子或箱子，建立稳定的基础"],
-                ans: 3,
-                rationale: "只有当骨盆（地基）被牢牢锚定，上半身的侧屈才能真正拉伸到侧腰和肋间肌，避免单纯的躯干倾斜代偿。"
-            },
-            {
-                q: "客户在做仰卧手臂系列时抱怨颈部前侧紧张，最可能的原因是？",
-                options: ["弹簧太轻", "呼吸太深", "脚放错了位置", "颈长肌等深层颈屈肌无力，导致胸锁乳突肌代偿发力；或头部位置过低导致颈椎过度伸展"],
-                ans: 3,
-                rationale: "这是一个常见的代偿。教练应该垫高客户头部（用小枕头）使其恢复中立位，并提示微微“点头” (Head Nod) 激活深层颈肌。"
-            },
-            {
-                q: "侧卧系列中，如何直观判断客户的骨盆是否处于额状面的中立位？",
-                options: ["上方腰部肌肉紧紧缩短", "客户下方腰部与垫子之间应有一个自然的小空隙（俗称“鼠洞”），保持两侧腰部等长", "整个侧腰完全贴死在垫子上", "上方的髋骨向后方翻转"],
-                ans: 1,
-                rationale: "维持“鼠洞”意味着脊柱保持直线，骨盆没有向垫子方向下沉侧倾，这需要下方腹斜肌和腰方肌的等长收缩。"
-            },
-            {
-                q: "“大象式” (Elephant) 的标准动作与呼吸配合是？",
-                options: ["吸气推开，吸气收回", "呼气推开，呼气收回", "吸气推开滑板，呼气收回滑板", "呼气推开滑板（髋伸展），吸气收回滑板（髋屈曲）"],
-                ans: 3,
-                rationale: "呼气帮助发力推开重弹簧并维持腹部上提，吸气时在重力的帮助和腹肌的离心控制下收回滑板。"
-            },
-            {
-                q: "梨状肌 (Piriformis) 在髋关节伸展时的主要功能是什么？",
-                options: ["髋内旋", "髋外旋 (External rotation)", "强力屈髋", "脊柱侧屈"],
-                ans: 1,
-                rationale: "梨状肌是深层六大外旋肌之一。如果梨状肌过紧，会压迫坐骨神经引起疼痛（梨状肌综合征）。"
-            },
-            {
-                q: "对于有明显“脊柱前凸” (Lordosis) 的客户做仰卧脚部动作时，教练可能需要做什么微调？",
-                options: ["让他们腰下悬空更多", "让他们在颈部垫大枕头", "禁止他们做任何下肢运动", "提示他们更强烈地募集腹肌以防止腰椎过度拱起，必要时允许他们保持在轻微印记位"],
-                ans: 3,
-                rationale: "脊柱前凸客户在腿部伸直（髋屈肌拉长）时极易腰痛，腹斜肌的强力介入（印记）能有效稳定过分前凸的腰椎。"
-            },
-            {
-                q: "如果一个体重较轻的客户在做“短脊柱按摩”时很难将臀部卷离滑板，教练该怎么做？",
-                options: ["让他们靠惯性猛甩双腿", "告诉他们放弃这个动作", "减少所有弹簧阻力", "适当增加一点弹簧阻力，利用弹簧的拉力辅助客户上卷"],
-                ans: 3,
-                rationale: "在这个特定动作中，更重的弹簧会拉扯双腿向头部方向移动，为核心力量不足或体重较轻的客户提供上卷的“助力”。"
-            },
-            {
-                q: "“跑步” (Running) 练习的主要生物力学目的是？",
-                options: ["心肺功能极限训练", "提高踝关节和足部的灵活性，并训练小腿肌肉在闭链状态下的向心和离心控制", "拉伸背部", "锻炼二头肌"],
-                ans: 1,
-                rationale: "双脚交替下踩脚跟，小腿三头肌（腓肠肌/比目鱼肌）在抵抗弹簧时不断进行向心和离心收缩交替，促进下肢血液循环。"
-            },
-            {
-                q: "斯多特普拉提 (STOTT PILATES) 与传统普拉提 (Classical Pilates) 在脊柱排列理念上的最大区别是什么？",
-                options: ["斯多特不注重呼吸", "斯多特只使用机器不使用垫子", "传统普拉提常强调平背 (Flat back)，而斯多特引入了基于现代解剖学的“中立位骨盆和自然脊柱曲线”概念", "斯多特禁止脊柱屈曲"],
-                ans: 2,
-                rationale: "STOTT 联合物理治疗师改良了传统方法，认为保留人体天然的颈、胸、腰椎生理曲线能够提供最佳的减震和发力效率。"
-            },
-            {
-                q: "当手臂向前伸手时，如果肩胛骨的下角翘起离开胸廓，这被称为？",
-                options: ["肩胛骨上提", "肩胛骨回缩", "肩胛骨下回旋", "肩胛骨前倾 (Anterior Tilt)"],
-                ans: 3,
-                rationale: "前倾通常是因为附着在肩胛骨前侧（喙突）的胸小肌过于紧绷，将肩胛骨向前向下拉扯导致的。"
-            },
-            {
-                q: "脊柱在水平面 (Transverse Plane) 上的主要运动是什么？",
-                options: ["屈曲", "伸展", "侧屈", "旋转 (Rotation)"],
-                ans: 3,
-                rationale: "例如扭转 (Twist) 动作，脊柱像螺旋桨一样在水平面上绕着垂直轴转动。"
-            },
-            {
-                q: "“上拉伸” (Up Stretch) 练习在准备和开始推开滑板时，脊柱必须处于什么状态？",
-                options: ["完全中立位", "均匀的屈曲状态 (Flexion / Round back)", "极度伸展", "侧屈状态"],
-                ans: 1,
-                rationale: "Up stretch 是一个结合了肩关节运动和脊柱逐节控制的高级动作，推开滑板时脊柱必须保持强有力的C型屈曲。"
-            },
-            {
-                q: "在 Knee Stretches 练习中，将双膝悬空 (Knees Off) 的变体主要增加了哪方面的挑战？",
-                options: ["减少了核心压力", "仅仅是拉伸大腿前侧", "使动作完全变成休息姿势", "极大地增加了核心和肩胛带在不稳定状态下维持身体重心的挑战"],
-                ans: 3,
-                rationale: "膝盖离地（悬空1-2英寸）会使支撑点减少，腹部肌肉必须像钢铁一样收缩才能固定骨盆，同时下肢还要抵抗弹簧推拉滑板。"
+                rationale: "桥式动作在推到最高点时，体重会向颈部转移。颈椎非常脆弱，绝不能用来承重。支撑点必须留在宽阔结实的上背部（肩胛带之间）。"
             }
         ];
 
@@ -883,14 +573,14 @@
         function startQuiz() {
             // Pick all questions in random order
             currentQuiz = shuffle([...questionDatabase]);
-            
+
             currentIndex = 0;
             score = 0;
-            
+
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
-            
+
             loadQuestion();
         }
 
@@ -898,20 +588,20 @@
             answered = false;
             const qData = currentQuiz[currentIndex];
             const totalQuestions = currentQuiz.length;
-            
+
             // Update Trackers
             document.getElementById('question-tracker').innerText = `题目: ${currentIndex + 1} / ${totalQuestions}`;
             document.getElementById('score-tracker').innerText = `得分: ${score}`;
             document.getElementById('progress-bar').style.width = `${((currentIndex) / totalQuestions) * 100}%`;
-            
+
             // Hide next button & feedback
             document.getElementById('next-btn').classList.add('hidden');
             document.getElementById('feedback-container').classList.add('hidden');
-            
+
             // Set Question Text
             const qText = document.getElementById('question-text');
             qText.innerText = `${currentIndex + 1}. ${qData.q}`;
-            
+
             // Remove animation class and re-add for effect
             const qContainer = document.getElementById('question-container');
             qContainer.classList.remove('fade-in');
@@ -921,7 +611,7 @@
             // Render Options
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
-            
+
             qData.options.forEach((optText, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-teal-400 hover:bg-teal-50 font-medium text-slate-700';
@@ -934,14 +624,14 @@
         function selectOption(selectedIndex, btnElement) {
             if (answered) return;
             answered = true;
-            
+
             const qData = currentQuiz[currentIndex];
             const isCorrect = (selectedIndex === qData.ans);
             const allBtns = document.querySelectorAll('.option-btn');
-            
+
             // Disable all buttons
             allBtns.forEach(btn => btn.disabled = true);
-            
+
             // Highlight answers
             allBtns.forEach((btn, index) => {
                 if (index === qData.ans) {
@@ -962,7 +652,7 @@
             const feedbackBox = document.getElementById('feedback-container');
             const feedbackTitle = document.getElementById('feedback-title');
             const feedbackText = document.getElementById('feedback-text');
-            
+
             feedbackBox.classList.remove('hidden');
             feedbackText.innerText = qData.rationale;
 
@@ -994,11 +684,11 @@
         function showResults() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            
+
             document.getElementById('final-score').innerText = score;
             document.getElementById('total-questions-result').innerText = currentQuiz.length;
             document.getElementById('progress-bar').style.width = '100%';
-            
+
             const msgEl = document.getElementById('result-message');
             let msg = "";
             const scorePercentage = score / currentQuiz.length;
@@ -1016,4 +706,5 @@
         }
     </script>
 </body>
+
 </html>
