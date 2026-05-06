@@ -7,14 +7,20 @@
     <title>斯多特普拉提 (STOTT PILATES) 模拟考试</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
         .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.35s ease-in-out;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(12px);
             }
 
             to {
@@ -23,1242 +29,1621 @@
             }
         }
 
-        .option-btn {
-            transition: all 0.2s ease;
+        /* Answer tile states */
+        .answer-tile {
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border-width: 2px;
+            word-break: break-word;
         }
 
-        .option-btn:disabled {
-            cursor: default;
+        .answer-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .10);
+        }
+
+        .answer-tile.selected {
+            border-color: #3b82f6 !important;
+            background: #eff6ff !important;
+            color: #1d4ed8 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .25);
+            transform: scale(1.01);
+        }
+
+        /* Slot states */
+        .slot-zone {
+            transition: all 0.18s ease;
+            cursor: pointer;
+            min-height: 48px;
+            border-width: 2px;
+            border-style: dashed;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            word-break: break-word;
+        }
+
+        .slot-zone.hover-active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .slot-zone.filled {
+            border-style: solid;
+            border-color: #94a3b8;
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        .slot-zone.correct {
+            border-style: solid;
+            border-color: #22c55e;
+            background: #f0fdf4;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .slot-zone.incorrect {
+            border-style: solid;
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .slot-zone.empty {
+            border-color: #cbd5e1;
+            color: #94a3b8;
+        }
+
+        .bin-slot-zone {
+            transition: all 0.18s ease;
+            cursor: pointer;
+            min-height: 48px;
+            border-width: 2px;
+            border-style: dashed;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            word-break: break-word;
+        }
+
+        .bin-slot-zone.filled {
+            border-style: solid;
+            border-color: #94a3b8;
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        .bin-slot-zone.correct {
+            border-style: solid;
+            border-color: #22c55e;
+            background: #f0fdf4;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .bin-slot-zone.incorrect {
+            border-style: solid;
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .bin-slot-zone.empty {
+            border-color: #fca5a5;
+            color: #94a3b8;
+        }
+
+        .question-card {
+            border-radius: 14px;
+            border-width: 2px;
+            border-color: #e2e8f0;
+            background: #f8fafc;
+            transition: border-color 0.2s;
+        }
+
+        .question-card.correct-border {
+            border-color: #22c55e;
+        }
+
+        .question-card.incorrect-border {
+            border-color: #ef4444;
+        }
+
+        .pulse-correct {
+            animation: pulseGreen 0.5s ease;
+        }
+
+        @keyframes pulseGreen {
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, .5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
         }
     </style>
 </head>
 
-<body class="bg-slate-100 min-h-screen flex items-center justify-center font-sans text-slate-800 p-4">
+<body class="bg-slate-100 min-h-screen font-sans text-slate-800">
 
-    <div id="app" class="max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden relative fade-in">
+    <!-- ===== HEADER (always visible) ===== -->
+    <div class="bg-teal-700 text-white px-6 py-5 text-center shadow-lg">
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">STOTT PILATES®</h1>
+        <p class="text-teal-200 mt-1 text-sm">Intensive Reformer (IR) — 理论模拟考试</p>
+    </div>
 
-        <!-- Header -->
-        <div class="bg-teal-700 text-white p-6 md:p-8 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">STOTT PILATES®</h1>
-            <p class="text-teal-100 mt-2 text-sm md:text-base">Intensive Reformer (IR) 理论模拟考试</p>
+    <!-- ===== START SCREEN ===== -->
+    <div id="start-screen" class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl p-10 text-center fade-in">
+        <div class="text-5xl mb-4">🏋️</div>
+        <h2 class="text-2xl font-bold mb-3">准备好测试你的知识了吗？</h2>
+        <p class="text-slate-500 mb-8 leading-relaxed">
+            题库共包含 <strong class="text-teal-700">100</strong> 道精选试题。<br>
+            每轮展示 <strong>4 道题目</strong>，将正确答案匹配到对应题目，<br>
+            并将 <strong>1 个错误答案</strong> 拖入垃圾桶。共 <strong class="text-teal-700">25 轮</strong>。<br>
+            <span class="text-xs text-slate-400 mt-2 block">只有第一次尝试正确才能得分，错误答案（垃圾桶）不计分。</span>
+        </p>
+        <button onclick="startGame()"
+            class="bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+            开始考试
+        </button>
+    </div>
+
+    <!-- ===== GAME SCREEN ===== -->
+    <div id="game-screen" class="hidden max-w-5xl mx-auto mt-0 pb-10">
+
+        <!-- Tracker bar -->
+        <div
+            class="bg-white px-6 py-3 flex justify-between items-center text-sm font-semibold text-slate-500 shadow-sm">
+            <span id="round-tracker" class="text-slate-700">第 1 / 25 轮</span>
+            <span id="score-tracker" class="text-teal-600 font-bold text-base">得分: 0 / 100</span>
+        </div>
+        <!-- Progress bar -->
+        <div class="w-full bg-slate-200 h-1.5">
+            <div id="progress-bar" class="bg-teal-500 h-1.5 transition-all duration-500" style="width:0%"></div>
         </div>
 
-        <!-- Start Screen -->
-        <div id="start-screen" class="p-8 md:p-12 text-center">
-            <h2 class="text-xl font-semibold mb-4">准备好测试你的知识了吗？</h2>
-            <p class="text-slate-600 mb-8 max-w-lg mx-auto">
-                题库共包含 100 道精选试题（涵盖解剖学、姿势分析、普拉提五大基本原则及塑身机动作库）。每次测试将<strong>随机打乱并测试所有题目</strong>。
+        <div class="mt-4 px-3 md:px-4 fade-in" id="round-content">
+
+            <!-- Instructions hint -->
+            <p class="text-xs text-slate-400 text-center mb-4">
+                💡 点击下方<strong>答案</strong>选中，再点击<strong>题目槽位</strong>或<strong>垃圾桶</strong>放置。点击已放置的槽位可取回答案。
             </p>
-            <button onclick="startQuiz()"
-                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
-                开始模拟考试
-            </button>
-        </div>
 
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="hidden p-6 md:p-8">
-            <div class="flex justify-between items-center mb-6 text-sm font-medium text-slate-500">
-                <span id="question-tracker">题目: 1 / 100</span>
-                <span id="score-tracker" class="text-teal-600">得分: 0</span>
-            </div>
+            <!-- 2-column layout: questions left, bin right on desktop -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-200 rounded-full h-2.5 mb-8">
-                <div id="progress-bar" class="bg-teal-600 h-2.5 rounded-full transition-all duration-300"
-                    style="width: 10%"></div>
-            </div>
-
-            <div id="question-container" class="fade-in">
-                <h3 id="question-text" class="text-lg md:text-xl font-semibold mb-6 leading-relaxed">这里是题目内容？</h3>
-
-                <div id="options-container" class="space-y-3">
-                    <!-- Options injected via JS -->
+                <!-- Questions column (takes 2/3) -->
+                <div class="lg:col-span-2 space-y-3" id="questions-container">
+                    <!-- question cards injected here -->
                 </div>
 
-                <div id="feedback-container"
-                    class="hidden mt-6 p-4 rounded-lg bg-slate-50 border border-slate-200 fade-in">
-                    <p id="feedback-title" class="font-bold mb-1"></p>
-                    
+                <!-- Right column: Bin + Answer Pool -->
+                <div class="lg:col-span-1 flex flex-col gap-4">
+                    <!-- Bin -->
+                    <div class="bg-white rounded-2xl shadow p-4 border-2 border-red-100">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-2xl">🗑️</span>
+                            <div>
+                                <p class="font-bold text-slate-700 text-sm">错误答案垃圾桶</p>
+                                <p class="text-xs text-slate-400">将错误答案放置于此</p>
+                            </div>
+                        </div>
+                        <div id="bin-slot" class="bin-slot-zone empty" onclick="placeIntoSlot('bin')">
+                            <span class="text-slate-400 text-sm italic">点击此处放置…</span>
+                        </div>
+                    </div>
+
+                    <!-- Answer Pool -->
+                    <div class="bg-white rounded-2xl shadow p-4">
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">可用答案</p>
+                        <div id="answers-pool" class="flex flex-col gap-2">
+                            <!-- answer tiles injected -->
+                        </div>
+                    </div>
                 </div>
+
             </div>
 
-            <div class="mt-8 flex justify-end">
-                <button id="next-btn" onclick="nextQuestion()"
-                    class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors">
-                    下一题
+            <!-- Action buttons -->
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="check-btn" onclick="checkAnswers()"
+                    class="bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold py-2.5 px-8 rounded-xl shadow transition-all">
+                    ✅ 检查答案
+                </button>
+                <button id="next-btn" onclick="nextRound()"
+                    class="hidden bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-2.5 px-8 rounded-xl shadow transition-all">
+                    下一轮 →
                 </button>
             </div>
+
         </div>
+    </div>
 
-        <!-- Result Screen -->
-        <div id="result-screen" class="hidden p-8 md:p-12 text-center fade-in">
-            <div id="result-icon" class="text-6xl mb-4">🏆</div>
-            <h2 class="text-2xl font-bold mb-2">测试完成！</h2>
-            <p class="text-lg text-slate-600 mb-6">你的最终得分是: <strong id="final-score"
-                    class="text-teal-700 text-3xl"></strong> / <span id="total-questions-result">100</span></p>
-
-            <div id="result-message" class="text-slate-700 mb-8 p-4 bg-teal-50 rounded-lg">
-                <!-- Result message injected via JS -->
-            </div>
-
-            <button onclick="startQuiz()"
-                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow transition-colors">
-                重新测试 (抽取新题)
-            </button>
-        </div>
-
+    <!-- ===== RESULT SCREEN ===== -->
+    <div id="result-screen"
+        class="hidden max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl p-10 text-center fade-in">
+        <div id="result-icon" class="text-6xl mb-4">🏆</div>
+        <h2 class="text-2xl font-bold mb-2">考试完成！</h2>
+        <p class="text-lg text-slate-600 mb-6">
+            你的最终得分是：<strong id="final-score" class="text-teal-700 text-4xl"></strong>
+            <span class="text-slate-400"> / 100</span>
+        </p>
+        <div id="result-message" class="text-slate-700 mb-8 p-4 bg-teal-50 rounded-xl text-sm leading-relaxed"></div>
+        <button onclick="startGame()"
+            class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-10 rounded-full shadow transition-colors">
+            重新开始
+        </button>
     </div>
 
     <script>
-        // Highly difficult, deeply anatomical, terminology-balanced question database
-                const questionDatabase = [
-            {
-                        "q": "斯多特普拉提建议在吸气 (Inhalation) 时扩张肋骨的后侧和侧方，主要原因是什么？",
-                        "options": [
-                                    "为了增加腹直肌 (Rectus Abdominis) 的募集",
-                                    "因为肺部的下叶 (Lower Lobes) 气体交换效率更高，且能减少颈部紧张",
-                                    "为了强制将胸椎 (Thoracic Spine) 推入垫子以获得稳定性",
-                                    "为了防止多裂肌 (Multifidus) 在运动中收缩"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在呼气 (Exhalation) 过程中，肋骨的生物力学运动趋势是：",
-                        "options": [
-                                    "向上并向外打开，辅助脊柱伸展 (Extension)",
-                                    "向内并向下闭合，辅助脊柱屈曲 (Flexion)",
-                                    "保持不动以维持等长收缩 (Isometric Contraction)",
-                                    "向前推移以增加肺活量"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“印迹位” (Imprint) 与单纯的“压平后背” (Flat Back) 最大的区别在于：",
-                        "options": [
-                                    "印迹位不需要任何肌肉参与",
-                                    "印迹位是由腹斜肌 (Obliques) 控制的轻微骨盆后倾，而非由臀肌强制驱动",
-                                    "印迹位必须消除腰椎所有的自然曲线",
-                                    "只有在站立位时才使用印迹位"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "关于中立位 (Neutral Pelvis)，以下哪项描述是正确的？",
-                        "options": [
-                                    "它是脊柱承受负荷最安全、减震效果最佳 (Optimal Shock-absorbing) 的位置",
-                                    "耻骨联合 (Pubic Symphysis) 应明显高于髂前上棘 (ASIS)",
-                                    "腰椎 (Lumbar Spine) 必须完全贴紧垫子以防止受伤",
-                                    "仅在进行脊柱屈曲动作时才使用中立位"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "在进行开链运动 (Open Kinetic Chain) 且腹肌力量不足以维持中立位时，应采用哪种骨盆摆放？",
-                        "options": [
-                                    "中立位 (Neutral)",
-                                    "绝对的后倾位 (Posterior Tilt)",
-                                    "印迹位 (Imprint)",
-                                    "前倾位 (Anterior Tilt)"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "维持“胸廓摆放” (Rib Cage Placement) 的主要目标是防止：",
-                        "options": [
-                                    "腹横肌 (Transversus Abdominis) 过度收缩",
-                                    "肋骨外翻 (Ribs Popping) 导致的核心连接丧失",
-                                    "肩胛骨的前伸 (Protraction)",
-                                    "呼吸频率过快"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在吸气时，腹部应该发生什么变化？",
-                        "options": [
-                                    "腹部应完全向外鼓起以吸入更多空气",
-                                    "维持腹部深层的轻微参与 (Light Engagement)，允许深层稳定性先验激活",
-                                    "必须用力将肚脐贴向脊柱 (Hollowing)",
-                                    "腹肌应完全放松"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "肩胛骨稳定性 (Scapular Stabilization) 强调的是：",
-                        "options": [
-                                    "将肩胛骨“钉”在肋骨上完全不动 (Rigidity)",
-                                    "动态的稳定感，维持肩胛骨平贴肋骨并避免过度耸肩",
-                                    "仅由上斜方肌 (Upper Trapezius) 维持位置",
-                                    "始终保持肩胛骨最大程度的后缩 (Retraction)"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "什么是“颅颈屈曲” (Cranio-vertebral Flexion)？",
-                        "options": [
-                                    "脊柱屈曲动作中，由环枕关节发起的微小“头点”动作",
-                                    "将下巴用力夹在胸口以拉伸颈椎",
-                                    "抬头看天花板的动作",
-                                    "仅涉及胸椎的弯曲"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "针对“驼背” (Kyphosis) 客户，仰卧时建议使用头垫的主要目的是：",
-                        "options": [
-                                    "增加动作难度",
-                                    "防止颈椎过度延伸 (Overextension) 并减轻颈部肌肉压力",
-                                    "强制其脊柱变平",
-                                    "为了让客户感觉更舒适而随意放置"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行脊柱伸展 (Extension) 练习时，配合吸气的生理益处是：",
-                        "options": [
-                                    "增加内脏压力",
-                                    "肋骨向上向外的扩张在生物力学上辅助了脊柱的伸展",
-                                    "能够完全放松腹肌",
-                                    "防止眩晕"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "斯多特原则中，呼气时采用“缩唇呼气” (Pursed-lip Breathing) 的作用不包括：",
-                        "options": [
-                                    "帮助调节呼吸节奏",
-                                    "增加呼气末期压力，辅助激活腹横肌 (TA)",
-                                    "提高本体感受",
-                                    "增加颈部肌肉的张力"
-                        ],
-                        "ans": 3
-            },
-            {
-                        "q": "在闭链运动 (Closed Kinetic Chain) 中（如双脚蹬在踏板上），通常推荐的骨盆位置是：",
-                        "options": [
-                                    "印迹位 (Imprint)",
-                                    "中立位 (Neutral)",
-                                    "持续交替",
-                                    "骨盆前倾 (Anterior Tilt)"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "腹横肌 (Transversus Abdominis) 的解剖位置及功能特点是：",
-                        "options": [
-                                    "最表层的腹肌，负责脊柱屈曲",
-                                    "最深层的腹肌，像腰带一样环绕躯干提供稳定性",
-                                    "附着在脊柱前侧，负责髋关节屈曲",
-                                    "仅在吸气时才起作用"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "肩胛骨的六种基本运动模式 include：",
-                        "options": [
-                                    "提升、下压、前伸、后缩、向上旋转、向下旋转",
-                                    "屈曲、伸展、内收、外展、内旋、外旋",
-                                    "仅有上下的平移",
-                                    "旋转、侧屈、滚动"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "在侧卧位 (Side-lying) 练习中，维持脊柱中立的关键指标是：",
-                        "options": [
-                                    "允许下侧腰部完全贴地",
-                                    "维持下侧腰部与垫子之间的微小空隙 (Waist Lifted)",
-                                    "上方髋部应向前倾斜",
-                                    "双腿必须完全锁死"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "呼吸原则中提到，“ breath pattern focuses the mind”，这体现了普拉提的什么特点？",
-                        "options": [
-                                    "仅关注心血管训练",
-                                    "身心结合 (Mind-body connection) 与动作的精准控制",
-                                    "追求大重量负荷",
-                                    "纯粹的力量训练"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "如果客户在仰卧位感到腰椎压力大，哪种微调最符合斯多特安全原则？",
-                        "options": [
-                                    "让客户憋气",
-                                    "建议其微调骨盆至偏向印迹位 (Shift slightly toward an imprinted position)",
-                                    "强迫其保持完美的中立位",
-                                    "停止所有练习"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "维持“肩胛骨稳定性”可以有效避免哪组肌肉的过度使用？",
-                        "options": [
-                                    "腹横肌",
-                                    "上斜方肌 (Upper Trapezius) 和颈部肌肉",
-                                    "臀中肌",
-                                    "腓肠肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“五大基本原则”在教学中的引入顺序通常是：",
-                        "options": [
-                                    "骨盆-呼吸-头颈-肩胛-胸廓",
-                                    "呼吸-骨盆-胸廓-肩胛-头颈",
-                                    "随意排序，没有逻辑",
-                                    "按照客户的喜爱程度排序"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "多裂肌 (Multifidus) 在脊柱稳定性中的主要角色是：",
-                        "options": [
-                                    "产生强大的屈曲力",
-                                    "提供节段性稳定性 (Segmental Stability) 和姿势控制",
-                                    "它是最表层的背部肌肉",
-                                    "负责髋关节的外展"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "髂腰肌 (Iliopsoas) 的止点 (Insertion) 通常位于：",
-                        "options": [
-                                    "髂嵴 (Iliac Crest)",
-                                    "股骨小转子 (Lesser Trochanter of Femur)",
-                                    "胫骨粗隆",
-                                    "脊柱 T12 椎体"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行“向上推起” (Press up) 动作时，肱三头肌 (Triceps Brachii) 的收缩类型是：",
-                        "options": [
-                                    "离心收缩 (Eccentric)",
-                                    "向心收缩 (Concentric)",
-                                    "等长收缩 (Isometric)",
-                                    "被动拉伸"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "哪组肌肉被统称为“肩袖” (Rotator Cuff)？",
-                        "options": [
-                                    "冈上肌、冈下肌、小圆肌、肩胛下肌 (SITS)",
-                                    "大圆肌、三角肌、斜方肌、背阔肌",
-                                    "胸大肌、胸小肌、前锯肌",
-                                    "肱二头肌、肱三头肌、肱肌"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "下列哪种运动发生在横断面 (Transverse Plane) 内？",
-                        "options": [
-                                    "脊柱屈曲 (Flexion)",
-                                    "髋关节外展 (Abduction)",
-                                    "脊柱旋转 (Rotation)",
-                                    "膝关节伸展 (Extension)"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "腘绳肌 (Hamstrings) 的主要功能不包括：",
-                        "options": [
-                                    "膝关节屈曲",
-                                    "髋关节伸展",
-                                    "膝关节过伸 (Hyperextension) 的预防",
-                                    "髋关节内收"
-                        ],
-                        "ans": 3
-            },
-            {
-                        "q": "腹内斜肌 (Internal Oblique) 在单侧收缩时会导致脊柱：",
-                        "options": [
-                                    "同侧旋转 (Ipsilateral Rotation)",
-                                    "对侧旋转 (Contralateral Rotation)",
-                                    "仅有伸展",
-                                    "没有任何动作"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "腰椎 (Lumbar Spine) 共有几节椎骨，其自然曲线是怎样的？",
-                        "options": [
-                                    "7 节，后突 (Kyphotic)",
-                                    "12 节，前突 (Lordotic)",
-                                    "5 节，前突 (Lordotic)",
-                                    "5 节，后突 (Kyphotic)"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "向心收缩 (Concentric Contraction) 指的是肌肉：",
-                        "options": [
-                                    "产生张力并拉长",
-                                    "长度不变但产生张力",
-                                    "产生张力并缩短",
-                                    "处于静息状态"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "股四头肌 (Quadriceps) 中唯一跨越两个关节的肌肉是：",
-                        "options": [
-                                    "股内侧肌 (Vastus Medialis)",
-                                    "股直肌 (Rectus Femoris)",
-                                    "股外侧肌 (Vastus Lateralis)",
-                                    "股中间肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "前锯肌 (Serratus Anterior) 的主要功能是：",
-                        "options": [
-                                    "使肩胛骨后缩",
-                                    "使肩胛骨前伸 (Protraction) 并维持其紧贴肋骨",
-                                    "导致耸肩",
-                                    "伸展肘关节"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "肩关节的外展 (Abduction) 动作主要发生在哪个运动平面？",
-                        "options": [
-                                    "矢状面 (Sagittal Plane)",
-                                    "冠状面 (Frontal Plane)",
-                                    "横断面 (Transverse Plane)",
-                                    "垂直面"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "盆底肌 (Pelvic Floor) 与哪块核心肌肉存在“共激活” (Co-contraction) 关系？",
-                        "options": [
-                                    "腹直肌",
-                                    "腹横肌 (TA)",
-                                    "腓肠肌",
-                                    "胸大肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "股二头肌 (Biceps Femoris) 属于哪一组肌肉？",
-                        "options": [
-                                    "股四头肌",
-                                    "腘绳肌 (Hamstrings)",
-                                    "髋屈肌",
-                                    "内收肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在矢状面 (Sagittal Plane) 内发生的动作组合是：",
-                        "options": [
-                                    "外展与内收",
-                                    "旋转与侧移",
-                                    "屈曲与伸展 (Flexion & Extension)",
-                                    "仅有内旋"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "下列哪块肌肉负责脊柱的伸展 (Extension)？",
-                        "options": [
-                                    "腹部斜肌",
-                                    "竖脊肌 (Erector Spinae)",
-                                    "髂腰肌",
-                                    "前锯肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“骨盆标志”中的 ASIS 代表：",
-                        "options": [
-                                    "髂后上棘",
-                                    "髂前上棘 (Anterior Superior Iliac Spine)",
-                                    "坐骨结节",
-                                    "耻骨联合"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在普拉提中，所谓的“离心控制” (Eccentric Control) 是指：",
-                        "options": [
-                                    "快速坠落",
-                                    "在肌肉拉长阶段有控制地对抗阻力",
-                                    "仅在动作起始位用力",
-                                    "完全放松肌肉"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "腓肠肌 (Gastrocnemius) 的主要动作是：",
-                        "options": [
-                                    "足背屈 (Dorsiflexion)",
-                                    "足跖屈 (Plantar Flexion) 和辅助膝屈曲",
-                                    "膝关节伸展",
-                                    "髋关节外展"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "髂前上棘 (ASIS) 和耻骨联合 (Pubic Symphysis) 在仰卧位处于同一水平面，说明：",
-                        "options": [
-                                    "骨盆处于后倾位",
-                                    "骨盆处于中立位 (Neutral)",
-                                    "骨盆处于前倾位",
-                                    "客户患有严重的脊柱侧弯"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "斯多特塑身机的弹簧阻力相比传统哑铃阻力，其显著特点是：",
-                        "options": [
-                                    "阻力在运动全过程中保持恒定",
-                                    "阻力随着弹簧的拉伸长度增加而递增 (Variable Resistance)",
-                                    "阻力仅在返回阶段消失",
-                                    "阻力受空气湿度影响"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "典型的红色 (Red) 弹簧在斯多特系统中代表的阻力比例是：",
-                        "options": [
-                                    "25%",
-                                    "50%",
-                                    "100% (标准阻力)",
-                                    "125%"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "关于“齿轮杆” (Gearbar) 的主要调节功能，描述正确的是：",
-                        "options": [
-                                    "仅用于增加或减少弹簧数量",
-                                    "调节弹簧的初始张力和滑板与踏板的起始距离",
-                                    "用于锁定滑板",
-                                    "改变脚踏板的高度"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "对于身材高大 (Tall) 的客户，为了防止其膝关节在滑板拉回位过度屈曲，教练应：",
-                        "options": [
-                                    "将挡块移近踏板",
-                                    "将齿轮杆向后移位 (Gear out) 并适当调整挡块",
-                                    "调低脚踏板高度",
-                                    "使用更轻的弹簧"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "如果在滑板拉回到挡块位时弹簧出现了“松动” (Play)，通常意味着：",
-                        "options": [
-                                    "设置正确",
-                                    "齿轮杆与挡块的组合不当，缺乏必要的初始张力 (Initial Tension)",
-                                    "弹簧应该被更换",
-                                    "滑板轨道需要润滑"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "蓝色 (Blue) 弹簧的阻力比例通常是标准弹簧的：",
-                        "options": [
-                                    "100%",
-                                    "75%",
-                                    "50%",
-                                    "125%"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "斯多特塑身机通常建议脚跟在踏板上的“90度原则”是指：",
-                        "options": [
-                                    "膝关节成 90 度",
-                                    "仰卧位脚跟置于踏板时，髋关节约呈 90 度屈曲",
-                                    "滑板与地面成 90 度",
-                                    "手臂与躯干成 90 度"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "调节“脚踏板” (Footbar) 高度的作用主要是：",
-                        "options": [
-                                    "改变弹簧的张力",
-                                    "适应客户的下肢长度，改变髋膝踝的屈曲角度和力矩",
-                                    "决定滑板移动的速度",
-                                    "仅仅为了让动作更好看"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "黑色 (Black) 弹簧通常被定义为：",
-                        "options": [
-                                    "轻阻力",
-                                    "中等阻力",
-                                    "特重阻力 (125%)",
-                                    "康复专用"
-                        ],
-                        "ans": 2
-            },
-            {
-                        "q": "为什么在某些动作中减轻弹簧（如减到 1 白）反而会增加难度？",
-                        "options": [
-                                    "弹簧会发出噪音",
-                                    "滑板的不稳定性增加，迫使客户调动更多的深层稳定肌 (Stability Challenge)",
-                                    "滑板会变得太沉重",
-                                    "教练会因此更累"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "塑身机的“滑轮” (Pulleys) 高度调节的作用是：",
-                        "options": [
-                                    "改变阻力的拉力线 (Line of Pull)，以适应不同的练习目标和身高",
-                                    "增加滑板的自重",
-                                    "防止拉力绳缠绕",
-                                    "调节齿轮杆的位置"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "白色 (White) 弹簧的阻力比例是：",
-                        "options": [
-                                    "10%",
-                                    "25%",
-                                    "50%",
-                                    "无阻力"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Gear out” (向外移齿轮杆) 通常适合哪种人群？",
-                        "options": [
-                                    "腿部较短的人",
-                                    "腿部较长或身材高大的人，以提供更多的活动空间",
-                                    "核心非常强壮的人",
-                                    "孕妇"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行“Mid-back Series” (中背部系列) 时，可能需要调节设置以确保：",
-                        "options": [
-                                    "滑板撞击挡块",
-                                    "手臂拥有完整的活动范围 (Range of Motion) 且弹簧在返回位仍有张力",
-                                    "客户完全屏住呼吸",
-                                    "使用 5 根红弹簧"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "高精度齿轮杆 (High-Precision Gearbar) 相比传统齿轮杆的优势在于：",
-                        "options": [
-                                    "有更多的微调位置（如 6 个）以实现更精准的个体化设置",
-                                    "颜色更漂亮",
-                                    "永远不需要清洁",
-                                    "弹簧阻力更大"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "调节“头托” (Headrest) 位置的主要生物力学考量是：",
-                        "options": [
-                                    "仅为了头部舒适",
-                                    "辅助颈椎达到中立位，特别是对驼背或头前伸客户",
-                                    "改变弹簧的比例",
-                                    "增加颈部力量"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行“Short Spine Stretch” (短脊柱伸展) 时，调节设置的目的是防止：",
-                        "options": [
-                                    "滑板离开轨道",
-                                    "滑板被拉得离滑轮架 (Pulley Bars) 过近，确保动作轨迹安全",
-                                    "弹簧断裂",
-                                    "拉力绳太短"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "斯多特塑身机弹簧的阻力计算方式通常是：",
-                        "options": [
-                                    "恒定的磅数",
-                                    "初始 1 英寸约 5 磅阻力，随后每增加 1 英寸递增约 1 磅",
-                                    "随速度快慢改变",
-                                    "仅由滑板重量决定"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行“Back Rowing”练习时，如果客户手臂够不到踏板，通常需要调：",
-                        "options": [
-                                    "弹簧更重",
-                                    "将挡块 (Stopper) 移向更靠近踏板的位置",
-                                    "拆掉拉力绳",
-                                    "调低头托"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "维护器械安全时，教练最应关注的是：",
-                        "options": [
-                                    "木质结构的颜色",
-                                    "弹簧、拉力绳的磨损程度以及弹簧挂钩是否完全落位",
-                                    "滑板上的灰尘",
-                                    "音响音量"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“百次拍击” (The Hundred) 的主要训练本质 (Essence) 是：",
-                        "options": [
-                                    "练习快速奔跑",
-                                    "在动态臂部运动的挑战下，增强腹肌耐力并维持骨盆和胸廓稳定性",
-                                    "仅仅是为了增加肺活量",
-                                    "伸展腘绳肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行“Ab Prep” (腹部准备) 练习时，向上的动作应伴随：",
-                        "options": [
-                                    "吸气",
-                                    "呼气 (Exhalation) 以辅助核心激活和脊柱屈曲",
-                                    "憋气",
-                                    "快速屏息"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“短脊柱伸展” (Short Spine Stretch) 动作的禁忌症是：",
-                        "options": [
-                                    "在头部下方放置枕头或头托抬高 (防止颈椎过度受压)",
-                                    "闭上眼睛",
-                                    "使用红色弹簧",
-                                    "赤脚练习"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "“胃部按摩” (Stomach Massage) 系列中，“圆背” (Round Back) 变体的主要目标是：",
-                        "options": [
-                                    "练习扩胸",
-                                    "在脊柱整体屈曲状态下练习核心稳定、脊柱柔韧性和下肢力线",
-                                    "仅仅是为了按摩腹部脂肪",
-                                    "为了强化斜方肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“单腿划圈” (One Leg Circle) 动作的核心挑战是：",
-                        "options": [
-                                    "划出最大的圈",
-                                    "在单腿绕环的非对称载荷下，维持骨盆的绝对稳定和水平",
-                                    "增加膝关节的力量",
-                                    "练习快速呼吸"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Elephant” (大象) 动作主要依靠哪种力量将滑板拉回挡块？",
-                        "options": [
-                                    "仅仅依靠腿部惯性",
-                                    "依靠深层腹肌 (Abdominals) 的收缩",
-                                    "依靠手臂推力",
-                                    "依靠重力"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在“Teaser” (中级) 动作中，身体平衡的点位于：",
-                        "options": [
-                                    "骶骨顶端",
-                                    "坐骨结节 (Sit-bones) 稍后方，通过核心控制维持 ¥ 位平衡",
-                                    "脊柱顶端",
-                                    "膝盖上"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Swan Dive Prep” (天鹅戏水准备) 的动作本质是：",
-                        "options": [
-                                    "强力推起上半身",
-                                    "练习背部伸肌 (Back Extensors) 的激活并维持脊柱的长曲线",
-                                    "仅仅是为了拉伸腹肌",
-                                    "练习手支撑力量"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "进行“Side Leg Lift Series” (侧卧腿部系列) 时，躯干应维持：",
-                        "options": [
-                                    "侧向坍塌在垫子上",
-                                    "中立位，且下侧腰部与垫子之间保留微小间隙 (Neutral Alignment)",
-                                    "最大程度的扭转",
-                                    "随腿部上下摆动"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Roll Up” (卷起) 动作中，脊柱的运动模式是：",
-                        "options": [
-                                    "像一块平板一样抬起",
-                                    "逐节动员 (Articulation)，一节一节离开垫子",
-                                    "快速弹起",
-                                    "仅涉及颈部"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Saw” (锯子) 动作结合了脊柱的：",
-                        "options": [
-                                    "侧屈与伸展",
-                                    "旋转与屈曲 (Rotation and Flexion)",
-                                    "仅有侧屈",
-                                    "后仰与旋转"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Shoulder Bridge Prep” (肩桥准备) 要求骨盆抬起时：",
-                        "options": [
-                                    "腰椎必须过度拱起",
-                                    "维持肋骨闭合，通过臀大肌和腘绳肌将骨盆整体抬起呈直线",
-                                    "依靠肩膀推力",
-                                    "膝盖左右晃动"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Breast Stroke Preps” (蛙泳准备) 的目的是训练：",
-                        "options": [
-                                    "强大的肱二头肌",
-                                    "脊柱伸展的顺序以及上、中背部伸肌的力量",
-                                    "快速游泳技巧",
-                                    "腿部爆发力"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在“Mermaid” (美人鱼) 动作中，侧屈的幅度应控制在：",
-                        "options": [
-                                    "直到骨盆离开滑板",
-                                    "在维持骨盆稳定且两侧腰部拉长的范围内",
-                                    "尽可能压到最低",
-                                    "快速摆动"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Leg Pull Front” (前支撑腿部动作) 的起始位类似于：",
-                        "options": [
-                                    "仰卧位",
-                                    "俯卧支撑 (Push-up Position)，全身呈一条直线",
-                                    "坐位",
-                                    "跪位侧弯"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "斯多特动作编排中的“Essence” (本质) 指的是：",
-                        "options": [
-                                    "每个动作的最低心率要求",
-                                    "动作的核心目标 and 生物力学意图",
-                                    "动作的起源故事",
-                                    "动作所需的音乐风格"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Cat Stretch” (猫式拉伸) 的主要生理益处是：",
-                        "options": [
-                                    "增加手臂围度",
-                                    "提高脊柱的灵活性、逐节动员能力及核心控制力",
-                                    "纯粹为了娱乐",
-                                    "练习手眼协调"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“One Leg Kick” (单腿踢) 在俯卧位挑战了哪种稳定性？",
-                        "options": [
-                                    "颈部稳定性",
-                                    "骨盆稳定性，防止膝关节运动导致骨盆前倾或旋转",
-                                    "足踝稳定性",
-                                    "肘部稳定性"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在进行“Mid-back Series”时，向下拉动拉力绳的动作主要是由哪组肌肉启动？",
-                        "options": [
-                                    "仅有二头肌",
-                                    "背阔肌 (Latissimus Dorsi) 和肩胛骨稳定肌",
-                                    "颈部肌肉",
-                                    "腓肠肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "动作库中的“Transition” (转换动作) 的目的是：",
-                        "options": [
-                                    "让课程变得碎片化",
-                                    "维持课程的流度 (Flow) 和练习的连续性，并保持原则执行",
-                                    "纯粹为了打发时间",
-                                    "替代核心练习"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "针对“摇摆背” (Sway Back) 体态，典型的特征表现为：",
-                        "options": [
-                                    "骨盆相对于脚踝前移 (Pelvis shifted forward)，且常伴有后倾趋势",
-                                    "整个背部非常平直",
-                                    "腰椎极度前突",
-                                    "胸椎非常僵硬且无法屈曲"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "针对“平背” (Flat Back) 客户，运动编程的侧重点应是：",
-                        "options": [
-                                    "进一步拉伸腘绳肌，增加脊柱的自然前突 and 动员练习",
-                                    "消除所有脊柱曲线",
-                                    "禁止进行任何屈曲练习",
-                                    "仅进行上肢大重量训练"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "怀孕 16 周后的孕妇在普拉提练习中的首要安全禁忌是：",
-                        "options": [
-                                    "禁止坐位",
-                                    "禁止长时间平躺仰卧位 (Supine Position)，以防压迫下腔静脉",
-                                    "禁止四足跪姿",
-                                    "禁止侧卧"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "针对骨质疏松 (Osteoporosis) 客户，应绝对避免：",
-                        "options": [
-                                    "中立位的负重练习",
-                                    "深度的脊柱屈曲 (如滚动、卷起动作) 以防压缩性骨折",
-                                    "脊柱伸展动作",
-                                    "站立平衡练习"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "患有急性腰椎间盘突出 (Disc Herniation) 的客户，练习中应强调：",
-                        "options": [
-                                    "大幅度的脊柱屈曲和负重扭转",
-                                    "维持脊柱中立位 (Neutral Spine) 下的稳定练习",
-                                    "快速的爆发力训练",
-                                    "仅进行拉伸"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“体态分析” (Postural Analysis) 在普拉提教学中的作用是：",
-                        "options": [
-                                    "为了批评客户的样貌",
-                                    "根据客户的骨骼对齐 and 肌肉平衡，制定个性化的安全编程",
-                                    "仅作为课后的闲聊话题",
-                                    "替代所有的动作示范"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "针对膝关节过伸 (Hyperextension) 的客户，进行 Footwork 时教练应提示：",
-                        "options": [
-                                    "完全锁死膝盖以获得稳定",
-                                    "保持膝盖“微屈” (Soft Knees) 或微调力线",
-                                    "尽量使用最重的弹簧",
-                                    "穿厚底鞋练习"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在斯多特认证实务考试中，教练的专业观察能力 (Observation) 重点在于：",
-                        "options": [
-                                    "观察客户的衣服品牌",
-                                    "瞬间捕捉到客户的代偿行为，如肋骨外翻、下巴突起等",
-                                    "盯着钟看时间",
-                                    "观察窗外的景色"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "针对关节过度灵活 (Hypermobility) 的客户，普拉提教学应专注于：",
-                        "options": [
-                                    "进一步挑战其柔韧性的极限",
-                                    "建立关节周围的肌肉支撑力，限制动作幅度在受控范围内",
-                                    "让其做最难的动作",
-                                    "忽略其关节状态"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "意象引导 (Imagery)（如“脊柱像一串珍珠”）的作用是：",
-                        "options": [
-                                    "增加课堂的娱乐性",
-                                    "辅助客户通过比喻更好地理解深层肌肉的发力和动作轨迹",
-                                    "替代所有的科学指令",
-                                    "延长课程时间"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "“Kyphosis-Lordosis” (驼背-腰椎前突) 体态客户通常需要拉伸：",
-                        "options": [
-                                    "腹肌 and 臀肌",
-                                    "髋屈肌 (Hip Flexors) and 胸小肌",
-                                    "腘绳肌",
-                                    "肱三头肌"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "在考试中，如果客户动作不标准，教练应首先采用：",
-                        "options": [
-                                    "严厉的批评",
-                                    "简洁有力的语言指令 (Verbal Cueing) 或必要的触觉引导 (Tactile Cueing)",
-                                    "停止音乐",
-                                    "亲自示范直到客户看懂"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "斯多特普拉提相比传统普拉提，其核心理念的演进是：",
-                        "options": [
-                                    "回归 1920 年代的原始动作",
-                                    "结合现代脊柱生物力学，强调恢复自然生理曲线 (Neutral Curves)",
-                                    "使用更复杂的重力设备",
-                                    "仅针对运动员开发动作"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "评估教练“编程能力” (Programming) 的标准之一是：",
-                        "options": [
-                                    "动作是否足够多",
-                                    "动作选择是否符合客户体态需求且顺序符合生物力学逻辑",
-                                    "是否使用了所有的器械",
-                                    "客户出汗量的多少"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "针对高血压客户，应避免的体位是：",
-                        "options": [
-                                    "长时间的倒置体位 (Head below Heart) 或憋气",
-                                    "坐姿",
-                                    "站立位",
-                                    "慢走"
-                        ],
-                        "ans": 0
-            },
-            {
-                        "q": "针对老年客户，普拉提练习的主要安全目标是：",
-                        "options": [
-                                    "极限挑战其最大力量",
-                                    "提高平衡感、保护骨密度并确保动作切换平稳安全",
-                                    "让其模仿高难度杂技",
-                                    "不使用任何阻力"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "教练在教学过程中，应如何放置自己的身体位置？",
-                        "options": [
-                                    "始终坐在椅子上",
-                                    "处于能清晰观察客户对齐并在必要时提供安全保护或触觉辅助的最佳位置",
-                                    "站在客户正后方不动",
-                                    "躲在设备后面"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "关于“触觉辅助” (Tactile Cueing)，以下哪项是专业的表现？",
-                        "options": [
-                                    "强力推动客户的关节",
-                                    "征得同意后，通过轻微的指引帮助客户感知特定肌肉的收缩或骨骼对齐",
-                                    "整个动作都用手帮客户完成",
-                                    "闭上眼睛触碰"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "针对患有严重脊柱侧弯 (Scoliosis) 的客户，运动编程应：",
-                        "options": [
-                                    "完全禁止运动",
-                                    "针对不对称的肌肉状态进行平衡练习，并利用呼吸技巧辅助排列",
-                                    "仅练习 Teaser",
-                                    "强制让其做对称练习"
-                        ],
-                        "ans": 1
-            },
-            {
-                        "q": "斯多特认证考试通过后，持证教练的身份标志是：",
-                        "options": [
-                                    "拥有一台塑身机",
-                                    "收到由 Merrithew 颁发的正式证书",
-                                    "学完所有的课程",
-                                    "自封为大师"
-                        ],
-                        "ans": 1
+        // ============================================================
+        // QUESTION DATABASE (100 questions)
+        // ============================================================
+        const questionDatabase = [
+            {
+                "q": "斯多特普拉提建议在吸气 (Inhalation) 时扩张肋骨的后侧和侧方，主要原因是什么？",
+                "options": [
+                    "为了增加腹直肌 (Rectus Abdominis) 的募集",
+                    "因为肺部的下叶 (Lower Lobes) 气体交换效率更高，且能减少颈部紧张",
+                    "为了强制将胸椎 (Thoracic Spine) 推入垫子以获得稳定性",
+                    "为了防止多裂肌 (Multifidus) 在运动中收缩"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在呼气 (Exhalation) 过程中，肋骨的生物力学运动趋势是：",
+                "options": [
+                    "向上并向外打开，辅助脊柱伸展 (Extension)",
+                    "向内并向下闭合，辅助脊柱屈曲 (Flexion)",
+                    "保持不动以维持等长收缩 (Isometric Contraction)",
+                    "向前推移以增加肺活量"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“印迹位” (Imprint) 与单纯的“压平后背” (Flat Back) 最大的区别在于：",
+                "options": [
+                    "印迹位不需要任何肌肉参与",
+                    "印迹位是由腹斜肌 (Obliques) 控制的轻微骨盆后倾，而非由臀肌强制驱动",
+                    "印迹位必须消除腰椎所有的自然曲线",
+                    "只有在站立位时才使用印迹位"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "关于中立位 (Neutral Pelvis)，以下哪项描述是正确的？",
+                "options": [
+                    "它是脊柱承受负荷最安全、减震效果最佳 (Optimal Shock-absorbing) 的位置",
+                    "耻骨联合 (Pubic Symphysis) 应明显高于髂前上棘 (ASIS)",
+                    "腰椎 (Lumbar Spine) 必须完全贴紧垫子以防止受伤",
+                    "仅在进行脊柱屈曲动作时才使用中立位"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "在进行开链运动 (Open Kinetic Chain) 且腹肌力量不足以维持中立位时，应采用哪种骨盆摆放？",
+                "options": [
+                    "中立位 (Neutral)",
+                    "绝对的后倾位 (Posterior Tilt)",
+                    "印迹位 (Imprint)",
+                    "前倾位 (Anterior Tilt)"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "维持“胸廓摆放” (Rib Cage Placement) 的主要目标是防止：",
+                "options": [
+                    "腹横肌 (Transversus Abdominis) 过度收缩",
+                    "肋骨外翻 (Ribs Popping) 导致的核心连接丧失",
+                    "肩胛骨的前伸 (Protraction)",
+                    "呼吸频率过快"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在吸气时，腹部应该发生什么变化？",
+                "options": [
+                    "腹部应完全向外鼓起以吸入更多空气",
+                    "维持腹部深层的轻微参与 (Light Engagement)，允许深层稳定性先验激活",
+                    "必须用力将肚脐贴向脊柱 (Hollowing)",
+                    "腹肌应完全放松"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "肩胛骨稳定性 (Scapular Stabilization) 强调的是：",
+                "options": [
+                    "将肩胛骨“钉”在肋骨上完全不动 (Rigidity)",
+                    "动态的稳定感，维持肩胛骨平贴肋骨并避免过度耸肩",
+                    "仅由上斜方肌 (Upper Trapezius) 维持位置",
+                    "始终保持肩胛骨最大程度的后缩 (Retraction)"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "什么是“颅颈屈曲” (Cranio-vertebral Flexion)？",
+                "options": [
+                    "脊柱屈曲动作中，由环枕关节发起的微小“头点”动作",
+                    "将下巴用力夹在胸口以拉伸颈椎",
+                    "抬头看天花板的动作",
+                    "仅涉及胸椎的弯曲"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "针对“驼背” (Kyphosis) 客户，仰卧时建议使用头垫的主要目的是：",
+                "options": [
+                    "增加动作难度",
+                    "防止颈椎过度延伸 (Overextension) 并减轻颈部肌肉压力",
+                    "强制其脊柱变平",
+                    "为了让客户感觉更舒适而随意放置"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行脊柱伸展 (Extension) 练习时，配合吸气的生理益处是：",
+                "options": [
+                    "增加内脏压力",
+                    "肋骨向上向外的扩张在生物力学上辅助了脊柱的伸展",
+                    "能够完全放松腹肌",
+                    "防止眩晕"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "斯多特原则中，呼气时采用“缩唇呼气” (Pursed-lip Breathing) 的作用不包括：",
+                "options": [
+                    "帮助调节呼吸节奏",
+                    "增加呼气末期压力，辅助激活腹横肌 (TA)",
+                    "提高本体感受",
+                    "增加颈部肌肉的张力"
+                ],
+                "ans": 3
+            },
+            {
+                "q": "在闭链运动 (Closed Kinetic Chain) 中（如双脚蹬在踏板上），通常推荐的骨盆位置是：",
+                "options": [
+                    "印迹位 (Imprint)",
+                    "中立位 (Neutral)",
+                    "持续交替",
+                    "骨盆前倾 (Anterior Tilt)"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "腹横肌 (Transversus Abdominis) 的解剖位置及功能特点是：",
+                "options": [
+                    "最表层的腹肌，负责脊柱屈曲",
+                    "最深层的腹肌，像腰带一样环绕躯干提供稳定性",
+                    "附着在脊柱前侧，负责髋关节屈曲",
+                    "仅在吸气时才起作用"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "肩胛骨的六种基本运动模式 include：",
+                "options": [
+                    "提升、下压、前伸、后缩、向上旋转、向下旋转",
+                    "屈曲、伸展、内收、外展、内旋、外旋",
+                    "仅有上下的平移",
+                    "旋转、侧屈、滚动"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "在侧卧位 (Side-lying) 练习中，维持脊柱中立的关键指标是：",
+                "options": [
+                    "允许下侧腰部完全贴地",
+                    "维持下侧腰部与垫子之间的微小空隙 (Waist Lifted)",
+                    "上方髋部应向前倾斜",
+                    "双腿必须完全锁死"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "呼吸原则中提到，“ breath pattern focuses the mind”，这体现了普拉提的什么特点？",
+                "options": [
+                    "仅关注心血管训练",
+                    "身心结合 (Mind-body connection) 与动作的精准控制",
+                    "追求大重量负荷",
+                    "纯粹的力量训练"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "如果客户在仰卧位感到腰椎压力大，哪种微调最符合斯多特安全原则？",
+                "options": [
+                    "让客户憋气",
+                    "建议其微调骨盆至偏向印迹位 (Shift slightly toward an imprinted position)",
+                    "强迫其保持完美的中立位",
+                    "停止所有练习"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "维持“肩胛骨稳定性”可以有效避免哪组肌肉的过度使用？",
+                "options": [
+                    "腹横肌",
+                    "上斜方肌 (Upper Trapezius) 和颈部肌肉",
+                    "臀中肌",
+                    "腓肠肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“五大基本原则”在教学中的引入顺序通常是：",
+                "options": [
+                    "骨盆-呼吸-头颈-肩胛-胸廓",
+                    "呼吸-骨盆-胸廓-肩胛-头颈",
+                    "随意排序，没有逻辑",
+                    "按照客户的喜爱程度排序"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "多裂肌 (Multifidus) 在脊柱稳定性中的主要角色是：",
+                "options": [
+                    "产生强大的屈曲力",
+                    "提供节段性稳定性 (Segmental Stability) 和姿势控制",
+                    "它是最表层的背部肌肉",
+                    "负责髋关节的外展"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "髂腰肌 (Iliopsoas) 的止点 (Insertion) 通常位于：",
+                "options": [
+                    "髂嵴 (Iliac Crest)",
+                    "股骨小转子 (Lesser Trochanter of Femur)",
+                    "胫骨粗隆",
+                    "脊柱 T12 椎体"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行“向上推起” (Press up) 动作时，肱三头肌 (Triceps Brachii) 的收缩类型是：",
+                "options": [
+                    "离心收缩 (Eccentric)",
+                    "向心收缩 (Concentric)",
+                    "等长收缩 (Isometric)",
+                    "被动拉伸"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "哪组肌肉被统称为“肩袖” (Rotator Cuff)？",
+                "options": [
+                    "冈上肌、冈下肌、小圆肌、肩胛下肌 (SITS)",
+                    "大圆肌、三角肌、斜方肌、背阔肌",
+                    "胸大肌、胸小肌、前锯肌",
+                    "肱二头肌、肱三头肌、肱肌"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "下列哪种运动发生在横断面 (Transverse Plane) 内？",
+                "options": [
+                    "脊柱屈曲 (Flexion)",
+                    "髋关节外展 (Abduction)",
+                    "脊柱旋转 (Rotation)",
+                    "膝关节伸展 (Extension)"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "腘绳肌 (Hamstrings) 的主要功能不包括：",
+                "options": [
+                    "膝关节屈曲",
+                    "髋关节伸展",
+                    "膝关节过伸 (Hyperextension) 的预防",
+                    "髋关节内收"
+                ],
+                "ans": 3
+            },
+            {
+                "q": "腹内斜肌 (Internal Oblique) 在单侧收缩时会导致脊柱：",
+                "options": [
+                    "同侧旋转 (Ipsilateral Rotation)",
+                    "对侧旋转 (Contralateral Rotation)",
+                    "仅有伸展",
+                    "没有任何动作"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "腰椎 (Lumbar Spine) 共有几节椎骨，其自然曲线是怎样的？",
+                "options": [
+                    "7 节，后突 (Kyphotic)",
+                    "12 节，前突 (Lordotic)",
+                    "5 节，前突 (Lordotic)",
+                    "5 节，后突 (Kyphotic)"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "向心收缩 (Concentric Contraction) 指的是肌肉：",
+                "options": [
+                    "产生张力并拉长",
+                    "长度不变但产生张力",
+                    "产生张力并缩短",
+                    "处于静息状态"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "股四头肌 (Quadriceps) 中唯一跨越两个关节的肌肉是：",
+                "options": [
+                    "股内侧肌 (Vastus Medialis)",
+                    "股直肌 (Rectus Femoris)",
+                    "股外侧肌 (Vastus Lateralis)",
+                    "股中间肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "前锯肌 (Serratus Anterior) 的主要功能是：",
+                "options": [
+                    "使肩胛骨后缩",
+                    "使肩胛骨前伸 (Protraction) 并维持其紧贴肋骨",
+                    "导致耸肩",
+                    "伸展肘关节"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "肩关节的外展 (Abduction) 动作主要发生在哪个运动平面？",
+                "options": [
+                    "矢状面 (Sagittal Plane)",
+                    "冠状面 (Frontal Plane)",
+                    "横断面 (Transverse Plane)",
+                    "垂直面"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "盆底肌 (Pelvic Floor) 与哪块核心肌肉存在“共激活” (Co-contraction) 关系？",
+                "options": [
+                    "腹直肌",
+                    "腹横肌 (TA)",
+                    "腓肠肌",
+                    "胸大肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "股二头肌 (Biceps Femoris) 属于哪一组肌肉？",
+                "options": [
+                    "股四头肌",
+                    "腘绳肌 (Hamstrings)",
+                    "髋屈肌",
+                    "内收肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在矢状面 (Sagittal Plane) 内发生的动作组合是：",
+                "options": [
+                    "外展与内收",
+                    "旋转与侧移",
+                    "屈曲与伸展 (Flexion & Extension)",
+                    "仅有内旋"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "下列哪块肌肉负责脊柱的伸展 (Extension)？",
+                "options": [
+                    "腹部斜肌",
+                    "竖脊肌 (Erector Spinae)",
+                    "髂腰肌",
+                    "前锯肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“骨盆标志”中的 ASIS 代表：",
+                "options": [
+                    "髂后上棘",
+                    "髂前上棘 (Anterior Superior Iliac Spine)",
+                    "坐骨结节",
+                    "耻骨联合"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在普拉提中，所谓的“离心控制” (Eccentric Control) 是指：",
+                "options": [
+                    "快速坠落",
+                    "在肌肉拉长阶段有控制地对抗阻力",
+                    "仅在动作起始位用力",
+                    "完全放松肌肉"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "腓肠肌 (Gastrocnemius) 的主要动作是：",
+                "options": [
+                    "足背屈 (Dorsiflexion)",
+                    "足跖屈 (Plantar Flexion) 和辅助膝屈曲",
+                    "膝关节伸展",
+                    "髋关节外展"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "髂前上棘 (ASIS) 和耻骨联合 (Pubic Symphysis) 在仰卧位处于同一水平面，说明：",
+                "options": [
+                    "骨盆处于后倾位",
+                    "骨盆处于中立位 (Neutral)",
+                    "骨盆处于前倾位",
+                    "客户患有严重的脊柱侧弯"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "斯多特塑身机的弹簧阻力相比传统哑铃阻力，其显著特点是：",
+                "options": [
+                    "阻力在运动全过程中保持恒定",
+                    "阻力随着弹簧的拉伸长度增加而递增 (Variable Resistance)",
+                    "阻力仅在返回阶段消失",
+                    "阻力受空气湿度影响"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "典型的红色 (Red) 弹簧在斯多特系统中代表的阻力比例是：",
+                "options": [
+                    "25%",
+                    "50%",
+                    "100% (标准阻力)",
+                    "125%"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "关于“齿轮杆” (Gearbar) 的主要调节功能，描述正确的是：",
+                "options": [
+                    "仅用于增加或减少弹簧数量",
+                    "调节弹簧的初始张力和滑板与踏板的起始距离",
+                    "用于锁定滑板",
+                    "改变脚踏板的高度"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "对于身材高大 (Tall) 的客户，为了防止其膝关节在滑板拉回位过度屈曲，教练应：",
+                "options": [
+                    "将挡块移近踏板",
+                    "将齿轮杆向后移位 (Gear out) 并适当调整挡块",
+                    "调低脚踏板高度",
+                    "使用更轻的弹簧"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "如果在滑板拉回到挡块位时弹簧出现了“松动” (Play)，通常意味着：",
+                "options": [
+                    "设置正确",
+                    "齿轮杆与挡块的组合不当，缺乏必要的初始张力 (Initial Tension)",
+                    "弹簧应该被更换",
+                    "滑板轨道需要润滑"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "蓝色 (Blue) 弹簧的阻力比例通常是标准弹簧的：",
+                "options": [
+                    "100%",
+                    "75%",
+                    "50%",
+                    "125%"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "斯多特塑身机通常建议脚跟在踏板上的“90度原则”是指：",
+                "options": [
+                    "膝关节成 90 度",
+                    "仰卧位脚跟置于踏板时，髋关节约呈 90 度屈曲",
+                    "滑板与地面成 90 度",
+                    "手臂与躯干成 90 度"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "调节“脚踏板” (Footbar) 高度的作用主要是：",
+                "options": [
+                    "改变弹簧的张力",
+                    "适应客户的下肢长度，改变髋膝踝的屈曲角度和力矩",
+                    "决定滑板移动的速度",
+                    "仅仅为了让动作更好看"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "黑色 (Black) 弹簧通常被定义为：",
+                "options": [
+                    "轻阻力",
+                    "中等阻力",
+                    "特重阻力 (125%)",
+                    "康复专用"
+                ],
+                "ans": 2
+            },
+            {
+                "q": "为什么在某些动作中减轻弹簧（如减到 1 白）反而会增加难度？",
+                "options": [
+                    "弹簧会发出噪音",
+                    "滑板的不稳定性增加，迫使客户调动更多的深层稳定肌 (Stability Challenge)",
+                    "滑板会变得太沉重",
+                    "教练会因此更累"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "塑身机的“滑轮” (Pulleys) 高度调节的作用是：",
+                "options": [
+                    "改变阻力的拉力线 (Line of Pull)，以适应不同的练习目标和身高",
+                    "增加滑板的自重",
+                    "防止拉力绳缠绕",
+                    "调节齿轮杆的位置"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "白色 (White) 弹簧的阻力比例是：",
+                "options": [
+                    "10%",
+                    "25%",
+                    "50%",
+                    "无阻力"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Gear out” (向外移齿轮杆) 通常适合哪种人群？",
+                "options": [
+                    "腿部较短的人",
+                    "腿部较长或身材高大的人，以提供更多的活动空间",
+                    "核心非常强壮的人",
+                    "孕妇"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行“Mid-back Series” (中背部系列) 时，可能需要调节设置以确保：",
+                "options": [
+                    "滑板撞击挡块",
+                    "手臂拥有完整的活动范围 (Range of Motion) 且弹簧在返回位仍有张力",
+                    "客户完全屏住呼吸",
+                    "使用 5 根红弹簧"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "高精度齿轮杆 (High-Precision Gearbar) 相比传统齿轮杆的优势在于：",
+                "options": [
+                    "有更多的微调位置（如 6 个）以实现更精准的个体化设置",
+                    "颜色更漂亮",
+                    "永远不需要清洁",
+                    "弹簧阻力更大"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "调节“头托” (Headrest) 位置的主要生物力学考量是：",
+                "options": [
+                    "仅为了头部舒适",
+                    "辅助颈椎达到中立位，特别是对驼背或头前伸客户",
+                    "改变弹簧的比例",
+                    "增加颈部力量"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行“Short Spine Stretch” (短脊柱伸展) 时，调节设置的目的是防止：",
+                "options": [
+                    "滑板离开轨道",
+                    "滑板被拉得离滑轮架 (Pulley Bars) 过近，确保动作轨迹安全",
+                    "弹簧断裂",
+                    "拉力绳太短"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "斯多特塑身机弹簧的阻力计算方式通常是：",
+                "options": [
+                    "恒定的磅数",
+                    "初始 1 英寸约 5 磅阻力，随后每增加 1 英寸递增约 1 磅",
+                    "随速度快慢改变",
+                    "仅由滑板重量决定"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行“Back Rowing”练习时，如果客户手臂够不到踏板，通常需要调：",
+                "options": [
+                    "弹簧更重",
+                    "将挡块 (Stopper) 移向更靠近踏板的位置",
+                    "拆掉拉力绳",
+                    "调低头托"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "维护器械安全时，教练最应关注的是：",
+                "options": [
+                    "木质结构的颜色",
+                    "弹簧、拉力绳的磨损程度以及弹簧挂钩是否完全落位",
+                    "滑板上的灰尘",
+                    "音响音量"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“百次拍击” (The Hundred) 的主要训练本质 (Essence) 是：",
+                "options": [
+                    "练习快速奔跑",
+                    "在动态臂部运动的挑战下，增强腹肌耐力并维持骨盆和胸廓稳定性",
+                    "仅仅是为了增加肺活量",
+                    "伸展腘绳肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行“Ab Prep” (腹部准备) 练习时，向上的动作应伴随：",
+                "options": [
+                    "吸气",
+                    "呼气 (Exhalation) 以辅助核心激活和脊柱屈曲",
+                    "憋气",
+                    "快速屏息"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“短脊柱伸展” (Short Spine Stretch) 动作的禁忌症是：",
+                "options": [
+                    "在头部下方放置枕头或头托抬高 (防止颈椎过度受压)",
+                    "闭上眼睛",
+                    "使用红色弹簧",
+                    "赤脚练习"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "“胃部按摩” (Stomach Massage) 系列中，“圆背” (Round Back) 变体的主要目标是：",
+                "options": [
+                    "练习扩胸",
+                    "在脊柱整体屈曲状态下练习核心稳定、脊柱柔韧性和下肢力线",
+                    "仅仅是为了按摩腹部脂肪",
+                    "为了强化斜方肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“单腿划圈” (One Leg Circle) 动作的核心挑战是：",
+                "options": [
+                    "划出最大的圈",
+                    "在单腿绕环的非对称载荷下，维持骨盆的绝对稳定和水平",
+                    "增加膝关节的力量",
+                    "练习快速呼吸"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Elephant” (大象) 动作主要依靠哪种力量将滑板拉回挡块？",
+                "options": [
+                    "仅仅依靠腿部惯性",
+                    "依靠深层腹肌 (Abdominals) 的收缩",
+                    "依靠手臂推力",
+                    "依靠重力"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在“Teaser” (中级) 动作中，身体平衡的点位于：",
+                "options": [
+                    "骶骨顶端",
+                    "坐骨结节 (Sit-bones) 稍后方，通过核心控制维持 ¥ 位平衡",
+                    "脊柱顶端",
+                    "膝盖上"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Swan Dive Prep” (天鹅戏水准备) 的动作本质是：",
+                "options": [
+                    "强力推起上半身",
+                    "练习背部伸肌 (Back Extensors) 的激活并维持脊柱的长曲线",
+                    "仅仅是为了拉伸腹肌",
+                    "练习手支撑力量"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "进行“Side Leg Lift Series” (侧卧腿部系列) 时，躯干应维持：",
+                "options": [
+                    "侧向坍塌在垫子上",
+                    "中立位，且下侧腰部与垫子之间保留微小间隙 (Neutral Alignment)",
+                    "最大程度的扭转",
+                    "随腿部上下摆动"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Roll Up” (卷起) 动作中，脊柱的运动模式是：",
+                "options": [
+                    "像一块平板一样抬起",
+                    "逐节动员 (Articulation)，一节一节离开垫子",
+                    "快速弹起",
+                    "仅涉及颈部"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Saw” (锯子) 动作结合了脊柱的：",
+                "options": [
+                    "侧屈与伸展",
+                    "旋转与屈曲 (Rotation and Flexion)",
+                    "仅有侧屈",
+                    "后仰与旋转"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Shoulder Bridge Prep” (肩桥准备) 要求骨盆抬起时：",
+                "options": [
+                    "腰椎必须过度拱起",
+                    "维持肋骨闭合，通过臀大肌和腘绳肌将骨盆整体抬起呈直线",
+                    "依靠肩膀推力",
+                    "膝盖左右晃动"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Breast Stroke Preps” (蛙泳准备) 的目的是训练：",
+                "options": [
+                    "强大的肱二头肌",
+                    "脊柱伸展的顺序以及上、中背部伸肌的力量",
+                    "快速游泳技巧",
+                    "腿部爆发力"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在“Mermaid” (美人鱼) 动作中，侧屈的幅度应控制在：",
+                "options": [
+                    "直到骨盆离开滑板",
+                    "在维持骨盆稳定且两侧腰部拉长的范围内",
+                    "尽可能压到最低",
+                    "快速摆动"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Leg Pull Front” (前支撑腿部动作) 的起始位类似于：",
+                "options": [
+                    "仰卧位",
+                    "俯卧支撑 (Push-up Position)，全身呈一条直线",
+                    "坐位",
+                    "跪位侧弯"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "斯多特动作编排中的“Essence” (本质) 指的是：",
+                "options": [
+                    "每个动作的最低心率要求",
+                    "动作的核心目标 and 生物力学意图",
+                    "动作的起源故事",
+                    "动作所需的音乐风格"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Cat Stretch” (猫式拉伸) 的主要生理益处是：",
+                "options": [
+                    "增加手臂围度",
+                    "提高脊柱的灵活性、逐节动员能力及核心控制力",
+                    "纯粹为了娱乐",
+                    "练习手眼协调"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“One Leg Kick” (单腿踢) 在俯卧位挑战了哪种稳定性？",
+                "options": [
+                    "颈部稳定性",
+                    "骨盆稳定性，防止膝关节运动导致骨盆前倾或旋转",
+                    "足踝稳定性",
+                    "肘部稳定性"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在进行“Mid-back Series”时，向下拉动拉力绳的动作主要是由哪组肌肉启动？",
+                "options": [
+                    "仅有二头肌",
+                    "背阔肌 (Latissimus Dorsi) 和肩胛骨稳定肌",
+                    "颈部肌肉",
+                    "腓肠肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "动作库中的“Transition” (转换动作) 的目的是：",
+                "options": [
+                    "让课程变得碎片化",
+                    "维持课程的流度 (Flow) 和练习的连续性，并保持原则执行",
+                    "纯粹为了打发时间",
+                    "替代核心练习"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "针对“摇摆背” (Sway Back) 体态，典型的特征表现为：",
+                "options": [
+                    "骨盆相对于脚踝前移 (Pelvis shifted forward)，且常伴有后倾趋势",
+                    "整个背部非常平直",
+                    "腰椎极度前突",
+                    "胸椎非常僵硬且无法屈曲"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "针对“平背” (Flat Back) 客户，运动编程的侧重点应是：",
+                "options": [
+                    "进一步拉伸腘绳肌，增加脊柱的自然前突 and 动员练习",
+                    "消除所有脊柱曲线",
+                    "禁止进行任何屈曲练习",
+                    "仅进行上肢大重量训练"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "怀孕 16 周后的孕妇在普拉提练习中的首要安全禁忌是：",
+                "options": [
+                    "禁止坐位",
+                    "禁止长时间平躺仰卧位 (Supine Position)，以防压迫下腔静脉",
+                    "禁止四足跪姿",
+                    "禁止侧卧"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "针对骨质疏松 (Osteoporosis) 客户，应绝对避免：",
+                "options": [
+                    "中立位的负重练习",
+                    "深度的脊柱屈曲 (如滚动、卷起动作) 以防压缩性骨折",
+                    "脊柱伸展动作",
+                    "站立平衡练习"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "患有急性腰椎间盘突出 (Disc Herniation) 的客户，练习中应强调：",
+                "options": [
+                    "大幅度的脊柱屈曲和负重扭转",
+                    "维持脊柱中立位 (Neutral Spine) 下的稳定练习",
+                    "快速的爆发力训练",
+                    "仅进行拉伸"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“体态分析” (Postural Analysis) 在普拉提教学中的作用是：",
+                "options": [
+                    "为了批评客户的样貌",
+                    "根据客户的骨骼对齐 and 肌肉平衡，制定个性化的安全编程",
+                    "仅作为课后的闲聊话题",
+                    "替代所有的动作示范"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "针对膝关节过伸 (Hyperextension) 的客户，进行 Footwork 时教练应提示：",
+                "options": [
+                    "完全锁死膝盖以获得稳定",
+                    "保持膝盖“微屈” (Soft Knees) 或微调力线",
+                    "尽量使用最重的弹簧",
+                    "穿厚底鞋练习"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在斯多特认证实务考试中，教练的专业观察能力 (Observation) 重点在于：",
+                "options": [
+                    "观察客户的衣服品牌",
+                    "瞬间捕捉到客户的代偿行为，如肋骨外翻、下巴突起等",
+                    "盯着钟看时间",
+                    "观察窗外的景色"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "针对关节过度灵活 (Hypermobility) 的客户，普拉提教学应专注于：",
+                "options": [
+                    "进一步挑战其柔韧性的极限",
+                    "建立关节周围的肌肉支撑力，限制动作幅度在受控范围内",
+                    "让其做最难的动作",
+                    "忽略其关节状态"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "意象引导 (Imagery)（如“脊柱像一串珍珠”）的作用是：",
+                "options": [
+                    "增加课堂的娱乐性",
+                    "辅助客户通过比喻更好地理解深层肌肉的发力和动作轨迹",
+                    "替代所有的科学指令",
+                    "延长课程时间"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "“Kyphosis-Lordosis” (驼背-腰椎前突) 体态客户通常需要拉伸：",
+                "options": [
+                    "腹肌 and 臀肌",
+                    "髋屈肌 (Hip Flexors) and 胸小肌",
+                    "腘绳肌",
+                    "肱三头肌"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "在考试中，如果客户动作不标准，教练应首先采用：",
+                "options": [
+                    "严厉的批评",
+                    "简洁有力的语言指令 (Verbal Cueing) 或必要的触觉引导 (Tactile Cueing)",
+                    "停止音乐",
+                    "亲自示范直到客户看懂"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "斯多特普拉提相比传统普拉提，其核心理念的演进是：",
+                "options": [
+                    "回归 1920 年代的原始动作",
+                    "结合现代脊柱生物力学，强调恢复自然生理曲线 (Neutral Curves)",
+                    "使用更复杂的重力设备",
+                    "仅针对运动员开发动作"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "评估教练“编程能力” (Programming) 的标准之一是：",
+                "options": [
+                    "动作是否足够多",
+                    "动作选择是否符合客户体态需求且顺序符合生物力学逻辑",
+                    "是否使用了所有的器械",
+                    "客户出汗量的多少"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "针对高血压客户，应避免的体位是：",
+                "options": [
+                    "长时间的倒置体位 (Head below Heart) 或憋气",
+                    "坐姿",
+                    "站立位",
+                    "慢走"
+                ],
+                "ans": 0
+            },
+            {
+                "q": "针对老年客户，普拉提练习的主要安全目标是：",
+                "options": [
+                    "极限挑战其最大力量",
+                    "提高平衡感、保护骨密度并确保动作切换平稳安全",
+                    "让其模仿高难度杂技",
+                    "不使用任何阻力"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "教练在教学过程中，应如何放置自己的身体位置？",
+                "options": [
+                    "始终坐在椅子上",
+                    "处于能清晰观察客户对齐并在必要时提供安全保护或触觉辅助的最佳位置",
+                    "站在客户正后方不动",
+                    "躲在设备后面"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "关于“触觉辅助” (Tactile Cueing)，以下哪项是专业的表现？",
+                "options": [
+                    "强力推动客户的关节",
+                    "征得同意后，通过轻微的指引帮助客户感知特定肌肉的收缩或骨骼对齐",
+                    "整个动作都用手帮客户完成",
+                    "闭上眼睛触碰"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "针对患有严重脊柱侧弯 (Scoliosis) 的客户，运动编程应：",
+                "options": [
+                    "完全禁止运动",
+                    "针对不对称的肌肉状态进行平衡练习，并利用呼吸技巧辅助排列",
+                    "仅练习 Teaser",
+                    "强制让其做对称练习"
+                ],
+                "ans": 1
+            },
+            {
+                "q": "斯多特认证考试通过后，持证教练的身份标志是：",
+                "options": [
+                    "拥有一台塑身机",
+                    "收到由 Merrithew 颁发的正式证书",
+                    "学完所有的课程",
+                    "自封为大师"
+                ],
+                "ans": 1
             }
-];
+        ];
 
-        let currentQuiz = [];
-        let currentIndex = 0;
+        // ============================================================
+        // GAME STATE
+        // ============================================================
+        const QUESTIONS_PER_ROUND = 4;
+        const TOTAL_ROUNDS = 25; // 100 / 4
+
+        let shuffledQuestions = [];
+        let currentRound = 0;
         let score = 0;
-        let answered = false;
 
-        // Shuffle array function (Fisher-Yates)
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex != 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        // Per-round state
+        let roundQuestions = [];   // 4 question objects
+        let correctAnswers = [];   // 4 correct answer strings (parallel to roundQuestions)
+        let wrongAnswer = '';      // 1 wrong answer string (the decoy)
+        let allAnswers = [];       // 5 shuffled answers for this round
+        let poolAnswers = [];      // answers still available to pick from pool
+        let placements = {};       // { 'slot-0': str, 'slot-1': str, ..., 'bin': str }
+        let selectedAnswer = null; // answer tile currently selected
+        let firstCheckDone = false;// whether the first check press happened this round
+        let lockedCorrect = new Set(); // slot IDs confirmed correct (locked permanently)
+        let isChecking = false;    // prevent double-clicks
+
+        // ============================================================
+        // UTILITIES
+        // ============================================================
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            return array;
+            return a;
         }
 
-        function startQuiz() {
-            // Pick all questions in random order
-            currentQuiz = shuffle([...questionDatabase]);
-
-            currentIndex = 0;
+        // ============================================================
+        // GAME FLOW
+        // ============================================================
+        function startGame() {
             score = 0;
-
+            currentRound = 0;
+            shuffledQuestions = shuffle([...questionDatabase]);
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-
-            loadQuestion();
+            document.getElementById('game-screen').classList.remove('hidden');
+            loadRound();
         }
 
-        function loadQuestion() {
-            answered = false;
-            const qData = currentQuiz[currentIndex];
-            const totalQuestions = currentQuiz.length;
+        function loadRound() {
+            // Reset round state
+            firstCheckDone = false;
+            lockedCorrect = new Set();
+            placements = {};
+            selectedAnswer = null;
+            isChecking = false;
 
-            // Update Trackers
-            document.getElementById('question-tracker').innerText = `题目: ${currentIndex + 1} / ${totalQuestions}`;
-            document.getElementById('score-tracker').innerText = `得分: ${score}`;
-            document.getElementById('progress-bar').style.width = `${((currentIndex) / totalQuestions) * 100}%`;
+            const start = currentRound * QUESTIONS_PER_ROUND;
+            roundQuestions = shuffledQuestions.slice(start, start + QUESTIONS_PER_ROUND);
+            correctAnswers = roundQuestions.map(q => q.options[q.ans]);
 
-            // Hide next button & feedback
+            // Pick 1 wrong answer from a random question in this round
+            const decoyQ = roundQuestions[Math.floor(Math.random() * QUESTIONS_PER_ROUND)];
+            const decoyOptions = decoyQ.options.filter((_, i) => i !== decoyQ.ans);
+            wrongAnswer = decoyOptions[Math.floor(Math.random() * decoyOptions.length)];
+
+            // Build & shuffle the 5-answer pool
+            allAnswers = shuffle([...correctAnswers, wrongAnswer]);
+            poolAnswers = [...allAnswers];
+
+            updateTrackers();
+            renderRound();
+        }
+
+        function updateTrackers() {
+            document.getElementById('round-tracker').innerText = `第 ${currentRound + 1} / ${TOTAL_ROUNDS} 轮`;
+            document.getElementById('score-tracker').innerText = `得分: ${score} / 100`;
+            document.getElementById('progress-bar').style.width = `${(currentRound / TOTAL_ROUNDS) * 100}%`;
+        }
+
+        // ============================================================
+        // RENDER
+        // ============================================================
+        function renderRound() {
+            renderQuestions();
+            renderBinSlot();
+            renderPool();
+            document.getElementById('check-btn').classList.remove('hidden');
             document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('feedback-container').classList.add('hidden');
+        }
 
-            // Set Question Text
-            const qText = document.getElementById('question-text');
-            qText.innerText = `${currentIndex + 1}. ${qData.q}`;
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            roundQuestions.forEach((q, i) => {
+                const slotId = `slot-${i}`;
+                const card = document.createElement('div');
+                card.className = 'question-card bg-white shadow p-4';
+                card.id = `card-${i}`;
 
-            // Remove animation class and re-add for effect
-            const qContainer = document.getElementById('question-container');
-            qContainer.classList.remove('fade-in');
-            void qContainer.offsetWidth; // trigger reflow
-            qContainer.classList.add('fade-in');
+                // Question number badge + text
+                const header = document.createElement('div');
+                header.className = 'flex items-start gap-3 mb-3';
 
-            // Render Options
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
+                const badge = document.createElement('div');
+                badge.className = 'flex-shrink-0 w-7 h-7 rounded-full bg-teal-600 text-white text-xs font-bold flex items-center justify-center mt-0.5';
+                badge.innerText = i + 1;
 
-            qData.options.forEach((optText, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-teal-400 hover:bg-teal-50 font-medium text-slate-700';
-                btn.innerText = String.fromCharCode(65 + index) + ". " + optText;
-                btn.onclick = () => selectOption(index, btn);
-                optionsContainer.appendChild(btn);
+                const qText = document.createElement('p');
+                qText.className = 'text-sm font-medium text-slate-700 leading-snug flex-1';
+                qText.innerText = q.q;
+
+                header.appendChild(badge);
+                header.appendChild(qText);
+
+                // Answer slot
+                const slot = document.createElement('div');
+                slot.id = slotId;
+                slot.className = 'slot-zone empty';
+                slot.innerHTML = '<span class="text-slate-400 italic">点击此处放置答案…</span>';
+                slot.onclick = () => placeIntoSlot(slotId);
+
+                card.appendChild(header);
+                card.appendChild(slot);
+                container.appendChild(card);
             });
         }
 
-        function selectOption(selectedIndex, btnElement) {
-            if (answered) return;
-            answered = true;
+        function renderBinSlot() {
+            const bin = document.getElementById('bin-slot');
+            bin.className = 'bin-slot-zone empty';
+            bin.innerHTML = '<span class="text-slate-400 text-sm italic">点击此处放置…</span>';
+        }
 
-            const qData = currentQuiz[currentIndex];
-            const isCorrect = (selectedIndex === qData.ans);
-            const allBtns = document.querySelectorAll('.option-btn');
-
-            // Disable all buttons
-            allBtns.forEach(btn => btn.disabled = true);
-
-            // Highlight answers
-            allBtns.forEach((btn, index) => {
-                if (index === qData.ans) {
-                    // Correct answer -> Green
-                    btn.classList.remove('border-slate-200', 'hover:border-teal-400', 'hover:bg-teal-50');
-                    btn.classList.add('border-green-500', 'bg-green-50', 'text-green-800');
-                } else if (index === selectedIndex && !isCorrect) {
-                    // Wrong selection -> Red
-                    btn.classList.remove('border-slate-200', 'hover:border-teal-400', 'hover:bg-teal-50');
-                    btn.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
-                } else {
-                    // Dim others
-                    btn.classList.add('opacity-50');
-                }
+        function renderPool() {
+            const pool = document.getElementById('answers-pool');
+            pool.innerHTML = '';
+            if (poolAnswers.length === 0) {
+                pool.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-2">所有答案已放置</p>';
+                return;
+            }
+            poolAnswers.forEach(ans => {
+                const tile = document.createElement('button');
+                const isSelected = (selectedAnswer === ans);
+                tile.className = 'answer-tile text-left px-4 py-3 rounded-xl ' +
+                    (isSelected
+                        ? 'border-blue-500 bg-blue-50 text-blue-800 selected'
+                        : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-teal-400 hover:bg-teal-50');
+                tile.innerText = ans;
+                tile.onclick = () => toggleSelect(ans);
+                pool.appendChild(tile);
             });
+        }
 
-            // Handle Score & Feedback
-            const feedbackBox = document.getElementById('feedback-container');
-            const feedbackTitle = document.getElementById('feedback-title');
-            feedbackBox.classList.remove('hidden');
-            if (isCorrect) {
-                score++;
-                document.getElementById('score-tracker').innerText = `得分: ${score}`;
-                feedbackTitle.innerText = "✅ 回答正确！";
-                feedbackTitle.className = "font-bold mb-1 text-green-700";
-                feedbackBox.className = "mt-6 p-4 rounded-lg border bg-green-50 border-green-200 fade-in";
-            } else {
-                feedbackTitle.innerText = "❌ 回答错误";
-                feedbackTitle.className = "font-bold mb-1 text-red-700";
-                feedbackBox.className = "mt-6 p-4 rounded-lg border bg-red-50 border-red-200 fade-in";
+        // ============================================================
+        // INTERACTION
+        // ============================================================
+        function toggleSelect(ans) {
+            if (isChecking) return;
+            selectedAnswer = (selectedAnswer === ans) ? null : ans;
+            renderPool();
+        }
+
+        function placeIntoSlot(slotId) {
+            if (isChecking) return;
+            // If this slot is locked correct, do nothing
+            if (lockedCorrect.has(slotId)) return;
+
+            if (selectedAnswer) {
+                // Return any currently placed answer in this slot back to pool
+                if (placements[slotId]) {
+                    poolAnswers.push(placements[slotId]);
+                }
+                // Place selected into slot
+                placements[slotId] = selectedAnswer;
+                poolAnswers = poolAnswers.filter(a => a !== selectedAnswer);
+                selectedAnswer = null;
+                updateSlotDisplay(slotId, 'filled');
+                renderPool();
+            } else if (placements[slotId]) {
+                // No tile selected — retrieve it from slot back to pool
+                poolAnswers.push(placements[slotId]);
+                delete placements[slotId];
+                updateSlotDisplay(slotId, 'empty');
+                renderPool();
+            }
+        }
+
+        function updateSlotDisplay(slotId, state, text) {
+            const isBin = slotId === 'bin';
+            const el = document.getElementById(isBin ? 'bin-slot' : slotId);
+            if (!el) return;
+
+            const placed = text || placements[slotId];
+            const baseClass = isBin ? 'bin-slot-zone' : 'slot-zone';
+
+            if (state === 'empty') {
+                el.className = baseClass + ' empty';
+                el.innerHTML = `<span class="text-slate-400 italic">${isBin ? '点击此处放置…' : '点击此处放置答案…'}</span>`;
+            } else if (state === 'filled') {
+                el.className = baseClass + ' filled';
+                el.innerText = placed;
+            } else if (state === 'correct') {
+                el.className = baseClass + ' correct';
+                el.innerText = placed;
+            } else if (state === 'incorrect') {
+                el.className = baseClass + ' incorrect';
+                el.innerText = placed;
+            }
+        }
+
+        // ============================================================
+        // CHECK LOGIC
+        // ============================================================
+        function checkAnswers() {
+            if (isChecking) return;
+
+            // Ensure all 5 slots are filled
+            const allSlots = ['slot-0', 'slot-1', 'slot-2', 'slot-3', 'bin'];
+            for (const s of allSlots) {
+                if (!placements[s]) {
+                    showToast('请先将所有 5 个答案放置到槽位后再检查！');
+                    return;
+                }
             }
 
-            // Show Next Button
-            document.getElementById('next-btn').classList.remove('hidden');
+            isChecking = true;
+            let allGreen = true;
+
+            // Check each question slot
+            for (let i = 0; i < 4; i++) {
+                const slotId = `slot-${i}`;
+                const placed = placements[slotId];
+                const expected = correctAnswers[i];
+                const isCorrect = (placed === expected);
+
+                if (isCorrect) {
+                    updateSlotDisplay(slotId, 'correct');
+                    document.getElementById(`card-${i}`).classList.remove('incorrect-border');
+                    document.getElementById(`card-${i}`).classList.add('correct-border');
+                    // Award point if this is the first check and not already locked
+                    if (!firstCheckDone && !lockedCorrect.has(slotId)) {
+                        score++;
+                    }
+                    lockedCorrect.add(slotId);
+                } else {
+                    updateSlotDisplay(slotId, 'incorrect');
+                    document.getElementById(`card-${i}`).classList.add('incorrect-border');
+                    document.getElementById(`card-${i}`).classList.remove('correct-border');
+                    allGreen = false;
+                }
+            }
+
+            // Check bin
+            const binPlaced = placements['bin'];
+            const binCorrect = (binPlaced === wrongAnswer);
+            if (binCorrect) {
+                updateSlotDisplay('bin', 'correct');
+                lockedCorrect.add('bin');
+            } else {
+                updateSlotDisplay('bin', 'incorrect');
+                allGreen = false;
+            }
+
+            firstCheckDone = true;
+            updateTrackers();
+
+            if (allGreen) {
+                document.getElementById('check-btn').classList.add('hidden');
+                document.getElementById('next-btn').classList.remove('hidden');
+                isChecking = false;
+            } else {
+                // After 1.2s, return incorrect answers to pool so player can fix
+                setTimeout(() => {
+                    returnIncorrectToPool();
+                    isChecking = false;
+                }, 1200);
+            }
         }
 
-        function nextQuestion() {
-            currentIndex++;
-            if (currentIndex < currentQuiz.length) {
-                loadQuestion();
-            } else {
+        function returnIncorrectToPool() {
+            const allSlots = ['slot-0', 'slot-1', 'slot-2', 'slot-3', 'bin'];
+            for (const slotId of allSlots) {
+                if (lockedCorrect.has(slotId)) continue; // keep correct ones locked
+                if (placements[slotId]) {
+                    poolAnswers.push(placements[slotId]);
+                    delete placements[slotId];
+                    updateSlotDisplay(slotId, 'empty');
+                    // Reset card border for question slots
+                    if (slotId !== 'bin') {
+                        const i = parseInt(slotId.split('-')[1]);
+                        document.getElementById(`card-${i}`).classList.remove('incorrect-border');
+                    }
+                }
+            }
+            renderPool();
+        }
+
+        // ============================================================
+        // NEXT ROUND / RESULTS
+        // ============================================================
+        function nextRound() {
+            currentRound++;
+            if (currentRound >= TOTAL_ROUNDS) {
                 showResults();
+            } else {
+                // Re-render with animation
+                const content = document.getElementById('round-content');
+                content.classList.remove('fade-in');
+                void content.offsetWidth;
+                content.classList.add('fade-in');
+                loadRound();
             }
         }
 
         function showResults() {
-            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-
             document.getElementById('final-score').innerText = score;
-            document.getElementById('total-questions-result').innerText = currentQuiz.length;
             document.getElementById('progress-bar').style.width = '100%';
 
-            const msgEl = document.getElementById('result-message');
-            let msg = "";
-            const scorePercentage = score / currentQuiz.length;
-            if (scorePercentage >= 0.9) {
-                msg = "太棒了！你的理论知识非常扎实，完全具备了通过真实考试的水平！";
-                document.getElementById('result-icon').innerText = "🏆";
-            } else if (scorePercentage >= 0.7) {
-                msg = "表现不错！你已经掌握了大部分核心概念，再复习一下错题部分就完美了。";
-                document.getElementById('result-icon').innerText = "⭐";
+            const pct = score / 100;
+            let msg, icon;
+            if (pct >= 0.9) {
+                msg = '太棒了！你的理论知识非常扎实，完全具备了通过真实考试的水平！🎉';
+                icon = '🏆';
+            } else if (pct >= 0.7) {
+                msg = '表现不错！你已经掌握了大部分核心概念，再针对错题复习一遍就完美了。';
+                icon = '⭐';
             } else {
-                msg = "继续加油！建议重新复习一遍普拉提五大基本原则和肌肉解剖学部分。";
-                document.getElementById('result-icon').innerText = "📚";
+                msg = '继续加油！建议重新复习普拉提五大基本原则和功能性解剖学部分。';
+                icon = '📚';
             }
-            msgEl.innerText = msg;
+            document.getElementById('result-message').innerText = msg;
+            document.getElementById('result-icon').innerText = icon;
+        }
+
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
+        function showToast(msg) {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 22px;border-radius:999px;font-size:0.875rem;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s';
+                document.body.appendChild(toast);
+            }
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
         }
     </script>
 </body>
