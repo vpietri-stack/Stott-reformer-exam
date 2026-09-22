@@ -179,13 +179,42 @@
 <body class="bg-slate-100 min-h-screen font-sans text-slate-800">
 
     <!-- ===== HEADER (always visible) ===== -->
-    <div class="bg-teal-700 text-white px-6 py-5 text-center shadow-lg">
+    <div class="bg-teal-700 text-white px-6 py-5 text-center shadow-lg relative">
         <h1 class="text-2xl md:text-3xl font-bold tracking-tight">STOTT PILATES®</h1>
         <p class="text-teal-200 mt-1 text-sm">Intensive Reformer (IR) — 理论模拟考试</p>
+        <div id="user-chip" class="hidden absolute right-4 top-4 flex items-center gap-2 text-xs">
+            <span class="bg-teal-800/80 rounded-full px-3 py-1.5">👤 <span id="user-chip-name"></span></span>
+            <button onclick="stottLogout()" class="bg-teal-800/80 hover:bg-teal-900 rounded-full px-3 py-1.5 transition-colors">退出</button>
+        </div>
+    </div>
+
+    <!-- ===== LOGIN SCREEN (shown until login succeeds) ===== -->
+    <div id="login-screen" class="max-w-md mx-auto mt-10 bg-white rounded-2xl shadow-xl p-10 text-center fade-in">
+        <div class="text-5xl mb-4">🔐</div>
+        <h2 class="text-2xl font-bold mb-2">请先登录</h2>
+        <p class="text-slate-500 mb-6 text-sm leading-relaxed">本模拟考试仅限授权学员使用。<br>请输入你的账号和密码。</p>
+        <form onsubmit="stottDoLogin(event)" class="text-left space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="login-username">用户名</label>
+                <input id="login-username" type="text" autocomplete="username" autocapitalize="none"
+                    class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="login-password">密码</label>
+                <input id="login-password" type="password" autocomplete="current-password"
+                    class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500" />
+            </div>
+            <p id="login-error" class="hidden text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2"></p>
+            <button id="login-btn" type="submit"
+                class="w-full bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold py-3 rounded-full shadow-lg transition-all">
+                登 录
+            </button>
+        </form>
+        <p class="text-xs text-slate-400 mt-5">忘记密码？请微信联系老师重置。</p>
     </div>
 
     <!-- ===== START SCREEN ===== -->
-    <div id="start-screen" class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl p-10 text-center fade-in">
+    <div id="start-screen" class="hidden max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl p-10 text-center fade-in">
         <div class="text-5xl mb-4">🏋️</div>
         <h2 class="text-2xl font-bold mb-3">准备好测试你的知识了吗？</h2>
         <p class="text-slate-500 mb-8 leading-relaxed">
@@ -1134,6 +1163,7 @@
         // GAME FLOW
         // ============================================================
         function startGame() {
+            if (!stottGetToken()) { stottShowLogin('请先登录再开始考试。'); return; }
             score = 0;
             currentRound = 0;
             shuffledQuestions = shuffle([...questionDatabase]);
@@ -1448,6 +1478,7 @@
             toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
         }
     </script>
+    <script src="stott_auth.js"></script>
 </body>
 
 </html>

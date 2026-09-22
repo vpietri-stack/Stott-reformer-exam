@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "COSMOS_ENDPOINT": "",
+    "COSMOS_KEY": "",
+    "COSMOS_DB_NAME": "Val-EslApp",
+    "COSMOS_CONTAINER_NAME": "StottUsers",
+    "SESSION_SECRET": "local-dev-secret-change-before-deploy",
+    "APP_API_KEY": ""
+  }
+}

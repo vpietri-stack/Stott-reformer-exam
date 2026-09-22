@@ -1,0 +1,16 @@
+{
+  "name": "stott-reformer-exam-api",
+  "version": "1.0.0",
+  "description": "Login API for the Stott Reformer exam app (gate access, one device per account).",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start --port 7075"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.9.3",
+    "@azure/functions": "^4.0.0"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.x"
+  }
+}
