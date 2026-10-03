@@ -1,9 +1,10 @@
 // Checks the question bank that lives inside index.html.
 //   node tools/check-bank.mjs            exit 0 = fit to commit
-// Contract of the bank: exactly 2 options per question, options[0] is the correct
-// answer (the UI shuffles display order, so "ans" is always 0), and "cat" is one of
-// CATS below. The banned-word list encodes the teacher's rule that the exam contains
-// no pregnancy/postpartum and no injury/pain/pathology content.
+// Contract of the bank: exactly 2 options per question, the correct answer is
+// options[ans], "cat" is one of CATS below, and the answer must not sit at the same
+// index for long stretches (tools/randomize-answers.mjs keeps that balanced). The
+// banned-word list encodes the teacher's rule that the exam contains no
+// pregnancy/postpartum and no injury/pain/pathology content.
 import fs from 'fs';
 
 const CATS = {
@@ -37,7 +38,7 @@ bank.forEach((q, i) => {
   const at = `#${i} ${q.q ? q.q.slice(0, 24) : '(no stem)'}`;
   if (typeof q.q !== 'string' || !q.q.trim()) problems.push(`${at}: empty stem`);
   if (!Array.isArray(q.options) || q.options.length !== 2) { problems.push(`${at}: needs exactly 2 options`); return; }
-  if (q.ans !== 0) problems.push(`${at}: ans must be 0 (options[0] is the correct answer)`);
+  if (q.ans !== 0 && q.ans !== 1) problems.push(`${at}: ans must be 0 or 1 (correct answer is options[ans])`);
   if (!Object.keys(CATS).includes(q.cat)) problems.push(`${at}: unknown cat "${q.cat}"`);
   if (norm(q.options[0]) === norm(q.options[1])) problems.push(`${at}: the two options are the same`);
   if (q.options.some(o => typeof o !== 'string' || !o.trim())) problems.push(`${at}: empty option`);
@@ -47,6 +48,19 @@ bank.forEach((q, i) => {
   const hits = BANNED.filter(w => hay.includes(w));
   if (hits.length) problems.push(`${at}: banned topic ${hits.join(', ')}`);
 });
+
+// answer-position balance: a long run on the same index leaks the answer to anyone
+// reading the source, which is what tools/randomize-answers.mjs exists to prevent
+let at0 = 0, run = 1, maxRun = 1, prev = null;
+bank.forEach(q => {
+  if (q.ans === 0) at0++;
+  run = (q.ans === prev) ? run + 1 : 1;
+  prev = q.ans;
+  if (run > maxRun) maxRun = run;
+});
+const share = Math.max(at0, bank.length - at0) / bank.length;
+if (share > 0.6) problems.push(`answer position is skewed: ${share * 100 | 0}% of questions put the answer at the same index — run node tools/randomize-answers.mjs`);
+if (maxRun > 20) problems.push(`${maxRun} consecutive questions answer the same index — run node tools/randomize-answers.mjs`);
 
 // near-duplicate stems: bitset Jaccard over character bigrams
 const ids = new Map();
@@ -85,6 +99,7 @@ bank.forEach((q, i) => {
 
 const counts = bank.reduce((a, q) => { a[q.cat] = (a[q.cat] || 0) + 1; return a; }, {});
 console.log(`questions: ${bank.length}   (scanned lines ${start + 1}..${end + 1} of index.html)`);
+console.log(`answer index 0: ${at0}   index 1: ${bank.length - at0}   longest same-index run: ${maxRun}`);
 for (const c of Object.keys(CATS)) console.log(`  ${c.padEnd(10)} ${CATS[c].padEnd(7)} ${String(counts[c] || 0).padStart(4)}`);
 console.log(`near-duplicate stems (>0.62 similarity): ${dupes.length}`);
 dupes.slice(0, 20).forEach(([i, j, v]) => console.log(`  ${Math.round(v * 100)}%  #${i} ${bank[i].q}  <>  #${j} ${bank[j].q}`));
